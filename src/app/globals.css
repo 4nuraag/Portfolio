@@ -1,26 +1,156 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Light Theme (Cream/Red) */
+  --background: #fdfcf8;
+  /* Cream White */
+  --foreground: #1a1a1a;
+
+  --primary: #dc2626;
+  /* Royal Red */
+  --primary-foreground: #ffffff;
+
+  --secondary: #e2e8f0;
+  --secondary-foreground: #1e293b;
+
+  --accent: #b91c1c;
+  /* Darker Red */
+  --accent-foreground: #ffffff;
+
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+
+  --border: #e5e7eb;
+
+  /* Background Beams - Light (Red Palette) */
+  --beam-path: #525252;
+  /* Darker Neutral 600 */
+  --beam-opacity: 0.15;
+  /* Lower opacity for light mode */
+  --beam-c1: #fca5a5;
+  /* Red 300 */
+  --beam-c2: #dc2626;
+  /* Red 600 */
+  --beam-c3: #7f1d1d;
+  /* Red 900 */
 }
 
-@theme inline {
+.dark {
+  /* Dark Theme (Black/Blue) */
+  --background: #000000;
+  --foreground: #f0f6fc;
+
+  --primary: #3b82f6;
+  /* Royal Blue */
+  --primary-foreground: #ffffff;
+
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+
+  --accent: #2563eb;
+  /* Darker Blue */
+  --accent-foreground: #ffffff;
+
+  --card: #0a0a0a;
+  --card-foreground: #f0f6fc;
+
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+
+  --border: #334155;
+
+  /* Background Beams - Dark (Blue Palette) */
+  --beam-path: #334155;
+  /* Slate 700 */
+  --beam-opacity: 0.3;
+  /* Default opacity for dark mode */
+  --beam-c1: #60a5fa;
+  /* Blue 400 */
+  --beam-c2: #3b82f6;
+  /* Blue 500 */
+  --beam-c3: #1e3a8a;
+  /* Blue 900 */
+}
+
+
+
+html,
+body {
+  background: transparent;
+  color: var(--foreground);
+  font-family: var(--font-outfit), sans-serif;
+  font-weight: 400;
+  /* Regular default */
+  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+  padding-bottom: env(safe-area-inset-bottom);
+  /* Safe area for mobiles */
+  min-height: 100%;
+}
+
+/* Global Styles */
+
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --animate-breathing: breathing 5s ease-in-out infinite;
+
+  @keyframes breathing {
+    0% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+
+    50% {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+
+    100% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Fluid Typography */
+h1 {
+  font-size: clamp(2.5rem, 5vw + 1rem, 5rem);
+  font-weight: 500;
+  /* Medium */
+}
+
+h2 {
+  font-size: clamp(2rem, 4vw + 1rem, 4rem);
+  font-weight: 500;
+  /* Medium */
+}
+
+h3 {
+  font-size: clamp(1.25rem, 2vw + 1rem, 2rem);
+  font-weight: 500;
+  /* Medium */
+}
+
+p {
+  font-size: clamp(1rem, 1vw + 0.5rem, 1.125rem);
+}
+
+/* Utilities */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
 }
