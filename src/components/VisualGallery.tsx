@@ -6,7 +6,6 @@ import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import GalleryOverlay from './GalleryOverlay';
 import VideoOverlay from './VideoOverlay';
-import { prefix } from '../lib/utils';
 
 // Data Configuration
 const galleries = [
@@ -15,32 +14,32 @@ const galleries = [
         title: 'Illustrations',
         type: 'gallery',
         count: '10 Items',
-        cover: prefix('/Illustration/PicsArt_05-31-10.01.23.jpg'),
+        cover: './Illustration/PicsArt_05-31-10.01.23.jpg',
         images: [
-            '/Illustration/main.png',
-            '/Illustration/final.png',
-            '/Illustration/finalp.png',
-            '/Illustration/1.2.png',
-            '/Illustration/PicsArt_05-31-10.01.23.jpg',
-            '/Illustration/PicsArt_06-24-01.00.55.jpg',
-            '/Illustration/Remini2021120312hhhhh4842326.png',
-            '/Illustration/fgdgfdg.png',
-            '/Illustration/sega.png',
-            '/Illustration/var1.png'
-        ].map(prefix)
+            './Illustration/main.png',
+            './Illustration/final.png',
+            './Illustration/finalp.png',
+            './Illustration/1.2.png',
+            './Illustration/PicsArt_05-31-10.01.23.jpg',
+            './Illustration/PicsArt_06-24-01.00.55.jpg',
+            './Illustration/Remini2021120312hhhhh4842326.png',
+            './Illustration/fgdgfdg.png',
+            './Illustration/sega.png',
+            './Illustration/var1.png'
+        ]
     },
     {
         id: 'lookbooks',
         title: 'Look Books',
         type: 'gallery',
         count: '4 Items',
-        cover: prefix('/Look Books/PIC03752.jpg'),
+        cover: './Look Books/PIC03752.jpg',
         images: [
-            '/Look Books/Desktop - 15.png',
-            '/Look Books/Frame 35.png',
-            '/Look Books/Frame 46.png',
-            '/Look Books/45.png'
-        ].map(prefix)
+            './Look Books/Desktop - 15.png',
+            './Look Books/Frame 35.png',
+            './Look Books/Frame 46.png',
+            './Look Books/45.png'
+        ]
     },
 
     {
@@ -48,39 +47,39 @@ const galleries = [
         title: 'Mixed Media',
         type: 'gallery',
         count: '12 Items',
-        cover: prefix('/Mixed Media/32442.jpg'),
+        cover: './Mixed Media/32442.jpg',
         images: [
-            '/Mixed Media/3 final.png',
-            '/Mixed Media/1 final.png',
-            '/Mixed Media/2 final.png',
-            '/Mixed Media/4 final.png',
-            '/Mixed Media/5 final.png',
-            '/Mixed Media/32442.jpg',
-            '/Mixed Media/PicsArt_06-15-03.02.12.jpg',
-            '/Mixed Media/PicsArt_10-02-07.32.29.jpg',
-            '/Mixed Media/PicsArt_10-08-03.15.37.png',
-            '/Mixed Media/PicsArt_10-29-12.31.46 (1).jpg',
-            '/Mixed Media/Picsart_23-03-01_12-50-14-325.jpg',
-            '/Mixed Media/RED_1633534674671.jpeg'
-        ].map(prefix)
+            './Mixed Media/3 final.png',
+            './Mixed Media/1 final.png',
+            './Mixed Media/2 final.png',
+            './Mixed Media/4 final.png',
+            './Mixed Media/5 final.png',
+            './Mixed Media/32442.jpg',
+            './Mixed Media/PicsArt_06-15-03.02.12.jpg',
+            './Mixed Media/PicsArt_10-02-07.32.29.jpg',
+            './Mixed Media/PicsArt_10-08-03.15.37.png',
+            './Mixed Media/PicsArt_10-29-12.31.46 (1).jpg',
+            './Mixed Media/Picsart_23-03-01_12-50-14-325.jpg',
+            './Mixed Media/RED_1633534674671.jpeg'
+        ]
     },
     {
         id: 'logo',
         title: 'Logos',
         type: 'gallery',
         count: '9 Items',
-        cover: prefix('/logo/logos.png'),
+        cover: './logo/logos.png',
         images: [
-            '/logo/main.png',
-            '/logo/3.png',
-            '/logo/everyrpmsscounts.png',
-            '/logo/Untitled-2.png',
-            '/logo/gg.png',
-            '/logo/main pattern.png',
-            '/logo/Group 35.png',
-            '/logo/Group 45.png',
-            '/logo/Group 10.png'
-        ].map(prefix)
+            './logo/main.png',
+            './logo/3.png',
+            './logo/everyrpmsscounts.png',
+            './logo/Untitled-2.png',
+            './logo/gg.png',
+            './logo/main pattern.png',
+            './logo/Group 35.png',
+            './logo/Group 45.png',
+            './logo/Group 10.png'
+        ]
     },
 
     {
@@ -88,65 +87,65 @@ const galleries = [
         title: 'Posters',
         type: 'gallery',
         count: '16 Items',
-        cover: prefix('/Posters/222.png'),
+        cover: './Posters/222.png',
         images: [
-            '/Posters/final.png',
-            '/Posters/razor story.png',
-            '/Posters/arthur cover 1.png',
-            '/Posters/aguerooo.png',
-            '/Posters/em2.png',
-            '/Posters/12.png',
-            '/Posters/222.png',
-            '/Posters/2222.png',
-            '/Posters/23.png',
-            '/Posters/34.png',
-            '/Posters/Picture3.png',
-            '/Posters/PicsArt_05-31-10.08.45.jpg',
-            '/Posters/PicsArt_09-02-05.03.24.jpg'
-        ].map(prefix)
+            './Posters/final.png',
+            './Posters/razor story.png',
+            './Posters/arthur cover 1.png',
+            './Posters/aguerooo.png',
+            './Posters/em2.png',
+            './Posters/12.png',
+            './Posters/222.png',
+            './Posters/2222.png',
+            './Posters/23.png',
+            './Posters/34.png',
+            './Posters/Picture3.png',
+            './Posters/PicsArt_05-31-10.08.45.jpg',
+            './Posters/PicsArt_09-02-05.03.24.jpg'
+        ]
     },
     {
         id: 'ai',
         title: 'Generative AI',
         type: 'gallery',
         count: '13 Items',
-        cover: prefix('/Generative AI/flight.png'),
+        cover: './Generative AI/flight.png',
         images: [
-            '/Generative AI/crystals.png',
-            '/Generative AI/electricity.png',
-            '/Generative AI/green.png',
-            '/Generative AI/heat.png',
-            '/Generative AI/rock.png',
-            '/Generative AI/water.png',
-            '/Generative AI/dhanushvk_grove_street_gang_members_posing_with_dancing_cars_st_3da6742c-b52e-48d2-ac27-b32a6896d78e.png',
-            '/Generative AI/dhanushvkjl_a_1969_Ford_Mustang_Satin_Chrome_Silk_Green_Vinyl_c_d1501c63-778b-4538-93f3-da6badc2648f.png',
-            '/Generative AI/dhanushvkjl_a_2005_model_BMW_m3_GTR_matte_black_minimalistic_en_ff526fce-61b1-4be1-883d-0037023666ce.png',
-            '/Generative AI/dhanushvkjl_a_RETRO_computer_setup_table_retro_monitor_retro_fi_4286dccd-17a6-4261-a7ab-ad1bb6923fef.png',
-            '/Generative AI/Picsart_23-10-14_20-34-24-476.jpg',
-            '/Generative AI/flight.png',
-            '/Generative AI/wolf.png'
-        ].map(prefix)
+            './Generative AI/crystals.png',
+            './Generative AI/electricity.png',
+            './Generative AI/green.png',
+            './Generative AI/heat.png',
+            './Generative AI/rock.png',
+            './Generative AI/water.png',
+            './Generative AI/dhanushvk_grove_street_gang_members_posing_with_dancing_cars_st_3da6742c-b52e-48d2-ac27-b32a6896d78e.png',
+            './Generative AI/dhanushvkjl_a_1969_Ford_Mustang_Satin_Chrome_Silk_Green_Vinyl_c_d1501c63-778b-4538-93f3-da6badc2648f.png',
+            './Generative AI/dhanushvkjl_a_2005_model_BMW_m3_GTR_matte_black_minimalistic_en_ff526fce-61b1-4be1-883d-0037023666ce.png',
+            './Generative AI/dhanushvkjl_a_RETRO_computer_setup_table_retro_monitor_retro_fi_4286dccd-17a6-4261-a7ab-ad1bb6923fef.png',
+            './Generative AI/Picsart_23-10-14_20-34-24-476.jpg',
+            './Generative AI/flight.png',
+            './Generative AI/wolf.png'
+        ]
     },
     {
         id: 'blender',
         title: 'Blender 3D',
         type: 'gallery',
         count: '12 Items',
-        cover: prefix('/renders/Screenshot 2025-08-21 220130.png'),
+        cover: './renders/Screenshot 2025-08-21 220130.png',
         images: [
-            '/renders/Screenshot 2025-08-21 220130.png',
-            '/renders/Screenshot 2025-08-21 220808.png',
-            '/renders/aztec.png',
-            '/renders/circle.png',
-            '/renders/darkfor.png',
-            '/renders/expl.png',
-            '/renders/guitarfinal.png',
-            '/renders/light.png',
-            '/renders/render 1.png',
-            '/renders/screen size.png',
-            '/renders/underW.png',
-            '/renders/untitled.png'
-        ].map(prefix)
+            './renders/Screenshot 2025-08-21 220130.png',
+            './renders/Screenshot 2025-08-21 220808.png',
+            './renders/aztec.png',
+            './renders/circle.png',
+            './renders/darkfor.png',
+            './renders/expl.png',
+            './renders/guitarfinal.png',
+            './renders/light.png',
+            './renders/render 1.png',
+            './renders/screen size.png',
+            './renders/underW.png',
+            './renders/untitled.png'
+        ]
     },
     {
         id: 'video-1',
@@ -154,7 +153,7 @@ const galleries = [
         type: 'video',
         videoId: '0l5WHzrB4kM',
         count: 'Video',
-        cover: prefix('/renders/darkfor.png'),
+        cover: './renders/darkfor.png',
         images: []
     },
     {
@@ -163,7 +162,7 @@ const galleries = [
         type: 'video',
         videoId: 'FXY9jAFIrjY',
         count: 'Video',
-        cover: prefix('/renders/Screenshot 2025-08-21 220808.png'),
+        cover: './renders/Screenshot 2025-08-21 220808.png',
         images: []
     }
 ];

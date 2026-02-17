@@ -26,7 +26,7 @@ export default function Hero() {
                 <div className="absolute inset-0 w-full h-full">
                     {/* 1. Grid Distortion (Base Image) */}
                     <GridDistortion
-                        imageSrc="/hero-bg.png"
+                        imageSrc="./hero-bg.png"
                         grid={10}
                         mouse={0}
                         strength={0}

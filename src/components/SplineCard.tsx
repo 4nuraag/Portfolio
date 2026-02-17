@@ -11,9 +11,9 @@ export default function SplineCard() {
     const [activeImage, setActiveImage] = useState<string | null>(null);
 
     const images = [
-        '/Untitled-2.png', // Digital Art
-        '/3 final.png',    // Mixed Media
-        '/Screenshot 2025-08-21 220130.png' // 3D
+        './Untitled-2.png', // Digital Art
+        './3 final.png',    // Mixed Media
+        './Screenshot 2025-08-21 220130.png' // 3D
     ];
 
     // Smooth spring physics for the tilt - tuned for continuous smooth response
@@ -128,12 +128,12 @@ export default function SplineCard() {
                     style={{ x: foregroundX, y: foregroundY, z: 60 }}
                     animate={{ y: [-10, 10, -10] }}
                     transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                    onMouseEnter={() => setActiveImage('/Untitled-2.png')}
+                    onMouseEnter={() => setActiveImage('./Untitled-2.png')}
                     onMouseLeave={() => setActiveImage(null)}
-                    className={`absolute top-4 right-4 md:top-20 md:-right-24 w-auto px-4 h-10 md:px-6 md:h-16 rounded-none backdrop-blur-xl border shadow-xl flex items-center justify-center gap-2 md:gap-3 cursor-pointer transition-all duration-300 ${activeImage === '/Untitled-2.png' ? 'bg-violet-500/20 border-violet-500/50 scale-105' : 'bg-black/60 border-white/10'}`}
+                    className={`absolute top-4 right-4 md:top-20 md:-right-24 w-auto px-4 h-10 md:px-6 md:h-16 rounded-none backdrop-blur-xl border shadow-xl flex items-center justify-center gap-2 md:gap-3 cursor-pointer transition-all duration-300 ${activeImage === './Untitled-2.png' ? 'bg-violet-500/20 border-violet-500/50 scale-105' : 'bg-black/60 border-white/10'}`}
                 >
-                    <Palette className={`w-4 h-4 md:w-5 md:h-5 pointer-events-none ${activeImage === '/Untitled-2.png' ? 'text-white' : 'text-violet-400'}`} />
-                    <span className={`text-xs md:text-sm font-semibold whitespace-nowrap pointer-events-none ${activeImage === '/Untitled-2.png' ? 'text-white' : 'text-violet-200'}`}>Digital Art</span>
+                    <Palette className={`w-4 h-4 md:w-5 md:h-5 pointer-events-none ${activeImage === './Untitled-2.png' ? 'text-white' : 'text-violet-400'}`} />
+                    <span className={`text-xs md:text-sm font-semibold whitespace-nowrap pointer-events-none ${activeImage === './Untitled-2.png' ? 'text-white' : 'text-violet-200'}`}>Digital Art</span>
                 </motion.div>
 
                 {/* 2. Floating Pill: "Mixed Media" */}
@@ -141,12 +141,12 @@ export default function SplineCard() {
                     style={{ x: foregroundX, y: foregroundY, z: 80 }}
                     animate={{ y: [10, -10, 10] }}
                     transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                    onMouseEnter={() => setActiveImage('/3 final.png')}
+                    onMouseEnter={() => setActiveImage('./3 final.png')}
                     onMouseLeave={() => setActiveImage(null)}
-                    className={`absolute bottom-20 left-4 md:bottom-32 md:-left-12 w-auto px-4 h-10 md:px-6 md:h-16 rounded-none backdrop-blur-xl border shadow-xl flex items-center justify-center gap-2 md:gap-3 cursor-pointer transition-all duration-300 ${activeImage === '/3 final.png' ? 'bg-cyan-500/20 border-cyan-500/50 scale-105' : 'bg-black/60 border-white/10'}`}
+                    className={`absolute bottom-20 left-4 md:bottom-32 md:-left-12 w-auto px-4 h-10 md:px-6 md:h-16 rounded-none backdrop-blur-xl border shadow-xl flex items-center justify-center gap-2 md:gap-3 cursor-pointer transition-all duration-300 ${activeImage === './3 final.png' ? 'bg-cyan-500/20 border-cyan-500/50 scale-105' : 'bg-black/60 border-white/10'}`}
                 >
-                    <Layers className={`w-4 h-4 md:w-5 md:h-5 pointer-events-none ${activeImage === '/3 final.png' ? 'text-white' : 'text-cyan-400'}`} />
-                    <span className={`text-xs md:text-sm font-semibold whitespace-nowrap pointer-events-none ${activeImage === '/3 final.png' ? 'text-white' : 'text-cyan-200'}`}>Mixed Media</span>
+                    <Layers className={`w-4 h-4 md:w-5 md:h-5 pointer-events-none ${activeImage === './3 final.png' ? 'text-white' : 'text-cyan-400'}`} />
+                    <span className={`text-xs md:text-sm font-semibold whitespace-nowrap pointer-events-none ${activeImage === './3 final.png' ? 'text-white' : 'text-cyan-200'}`}>Mixed Media</span>
                 </motion.div>
 
                 {/* 3. Floating Pill: "3D" (Interactive - NEW) */}
@@ -154,12 +154,12 @@ export default function SplineCard() {
                     style={{ x: foregroundX, y: foregroundY, z: 70 }}
                     animate={{ y: [-5, 5, -5] }}
                     transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                    onMouseEnter={() => setActiveImage('/Screenshot 2025-08-21 220130.png')}
+                    onMouseEnter={() => setActiveImage('./Screenshot 2025-08-21 220130.png')}
                     onMouseLeave={() => setActiveImage(null)}
-                    className={`absolute bottom-4 right-4 md:bottom-10 md:-right-8 w-auto px-4 h-10 md:px-6 md:h-16 rounded-none backdrop-blur-xl border shadow-xl flex items-center justify-center gap-2 md:gap-3 cursor-pointer transition-all duration-300 ${activeImage === '/Screenshot 2025-08-21 220130.png' ? 'bg-pink-500/20 border-pink-500/50 scale-105' : 'bg-black/60 border-white/10'}`}
+                    className={`absolute bottom-4 right-4 md:bottom-10 md:-right-8 w-auto px-4 h-10 md:px-6 md:h-16 rounded-none backdrop-blur-xl border shadow-xl flex items-center justify-center gap-2 md:gap-3 cursor-pointer transition-all duration-300 ${activeImage === './Screenshot 2025-08-21 220130.png' ? 'bg-pink-500/20 border-pink-500/50 scale-105' : 'bg-black/60 border-white/10'}`}
                 >
-                    <Box className={`w-4 h-4 md:w-5 md:h-5 pointer-events-none ${activeImage === '/Screenshot 2025-08-21 220130.png' ? 'text-white' : 'text-pink-400'}`} />
-                    <span className={`text-xs md:text-sm font-semibold whitespace-nowrap pointer-events-none ${activeImage === '/Screenshot 2025-08-21 220130.png' ? 'text-white' : 'text-pink-200'}`}>3D</span>
+                    <Box className={`w-4 h-4 md:w-5 md:h-5 pointer-events-none ${activeImage === './Screenshot 2025-08-21 220130.png' ? 'text-white' : 'text-pink-400'}`} />
+                    <span className={`text-xs md:text-sm font-semibold whitespace-nowrap pointer-events-none ${activeImage === './Screenshot 2025-08-21 220130.png' ? 'text-white' : 'text-pink-200'}`}>3D</span>
                 </motion.div>
 
                 {/* Floating 3D Shape (CSS Only) - REMOVED */}

@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import ProjectOverlay from './ProjectOverlay';
-import { prefix } from '../lib/utils';
 
 // Data Structure - Keeping original content
 const projects = [
@@ -18,7 +17,7 @@ const projects = [
         skills: 'UX/UI Design · Prototyping · HCI',
         tags: ['UI UX Designing', 'Figma', 'Hi-Fi Prototyping', 'Lo-Fi Prototyping', 'User Study', 'Requirement Analysis', 'Wireframing'], // Added tags
         tools: 'Figma, Adobe Photoshop',
-        image: prefix('/gallery/Brainary.png'), // Updated image path
+        image: './gallery/Brainary.png', // Updated image path
         link: 'https://www.figma.com/proto/MBEz2Nl2Xj8MTf9zGz8b6e/Brainary--Copy-?node-id=1-2&p=f&t=s1eTJqDm1SMajO3s-0&scaling=contain&content-scaling=fixed&page-id=0%3A1', // Direct link
         buttonText: 'View Prototype'
     },
@@ -30,7 +29,7 @@ const projects = [
         skills: 'Web Design · UI Motion · Typography',
         tags: ['WordPress', 'Elementor', 'HTML/CSS', 'Responsive-Design', 'UI/UX', 'Web-Optimization'],
         tools: 'Figma, Spline',
-        image: prefix('/gallery/ST.png'),
+        image: './gallery/ST.png',
         link: 'https://smalltownproductions.de/',
         buttonText: 'Visit Website'
     },
@@ -42,7 +41,7 @@ const projects = [
         skills: 'Web Design · UI Motion · Typography',
         tags: ['Figma', 'Figma Make', 'UI/UX', 'Prototyping', 'Responsive Design', 'Vibe Coding'],
         tools: 'Figma',
-        image: prefix('/gallery/photography (2).png'),
+        image: './gallery/photography (2).png',
         link: 'https://4nuraag-blend.figma.site/',
         buttonText: 'View Website'
     },
@@ -54,7 +53,7 @@ const projects = [
         skills: 'Angular · REST API · Java · HTML/CSS',
         tags: ['Angular', 'REST API', 'Java', 'HTML/CSS', 'API Testing', 'JSON', 'MVC Architecture', 'UI & UX design'],
         tools: 'Postman, DevTools, Git, Eclipse IDE, Adobe Photoshop, Visual Studio Code',
-        image: prefix('/gallery/canteen.png'),
+        image: './gallery/canteen.png',
         link: 'https://4nuraag.github.io/archimedes-canteen/',
         buttonText: 'View Prototype'
     },
@@ -66,7 +65,7 @@ const projects = [
         skills: 'Data-Visualization · UI/UX · Dark-Mode',
         tags: ['Figma', 'UI/UX', 'CRM-Dashboard', 'Data-Visualization', 'Prototyping', 'Dark-Mode'],
         tools: 'Figma',
-        image: prefix('/gallery/CAARD b2b.png'),
+        image: './gallery/CAARD b2b.png',
         link: 'https://www.figma.com/proto/6TMe8nRYBVq1Z8EBRacml1/CAARD-B2B-Revamp?node-id=1-3&t=s1eTJqDm1SMajO3s-0&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=1%3A3',
         buttonText: 'View Prototype'
     },
@@ -78,7 +77,7 @@ const projects = [
         skills: 'Analytics · Business-Intelligence · Data-Storytelling',
         tags: ['Power-BI', 'Tableau', 'Data-Visualization', 'Analytics', 'Business-Intelligence', 'Data-Storytelling'],
         tools: 'Power BI, Tableau',
-        image: prefix('/gallery/Data Vis.png'),
+        image: './gallery/Data Vis.png',
         link: '', // No link
         buttonText: null // Explicitly no button
     },
@@ -90,7 +89,7 @@ const projects = [
         skills: 'UI/UX · 3D Modeling · Branding',
         tags: ['UI/UX-Design', '3D-Modeling', 'Marketing-Visuals', 'Social-Media-Design', 'Dashboard-Prototyping', 'Branding'],
         tools: 'Figma, Blender',
-        image: prefix('/gallery/5.jpg'),
+        image: './gallery/5.jpg',
         link: 'https://www.caard.net/',
         buttonText: 'Visit Website'
     },
