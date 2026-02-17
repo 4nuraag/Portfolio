@@ -1,17 +1,10 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  output: 'export',
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'export', // Tells Next.js to build a static site
+  basePath: '/Portfolio', // REPLACE 'Portfolio' with your NEW repo name exactly
+  assetPrefix: '/Portfolio', // REPLACE 'Portfolio' with your NEW repo name exactly
   images: {
-    unoptimized: true,
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'img.youtube.com',
-      },
-    ],
+    unoptimized: true, // GitHub Pages doesn't support Next.js Image Optimization
   },
-  basePath: '/Portfolio',
 };
-
 export default nextConfig;
