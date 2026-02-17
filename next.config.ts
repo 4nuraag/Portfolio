@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export',  // Required for GitHub Pages
+  output: 'export',
   images: {
-    unoptimized: true, // Required for GitHub Pages (no server-side image optimization)
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -11,8 +11,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // If you are deploying to https://<USERNAME>.github.io/<REPO>/
-  // you might need: basePath: '/Portfolio',
+  basePath: '/Portfolio',
 };
 
 export default nextConfig;
