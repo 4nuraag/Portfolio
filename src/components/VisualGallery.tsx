@@ -6,6 +6,7 @@ import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import GalleryOverlay from './GalleryOverlay';
 import VideoOverlay from './VideoOverlay';
+import { prefix } from '../lib/utils';
 
 // Data Configuration
 const galleries = [
@@ -14,7 +15,7 @@ const galleries = [
         title: 'Illustrations',
         type: 'gallery',
         count: '10 Items',
-        cover: '/Illustration/PicsArt_05-31-10.01.23.jpg',
+        cover: prefix('/Illustration/PicsArt_05-31-10.01.23.jpg'),
         images: [
             '/Illustration/main.png',
             '/Illustration/final.png',
@@ -26,20 +27,20 @@ const galleries = [
             '/Illustration/fgdgfdg.png',
             '/Illustration/sega.png',
             '/Illustration/var1.png'
-        ]
+        ].map(prefix)
     },
     {
         id: 'lookbooks',
         title: 'Look Books',
         type: 'gallery',
         count: '4 Items',
-        cover: '/Look Books/PIC03752.jpg',
+        cover: prefix('/Look Books/PIC03752.jpg'),
         images: [
             '/Look Books/Desktop - 15.png',
             '/Look Books/Frame 35.png',
             '/Look Books/Frame 46.png',
             '/Look Books/45.png'
-        ]
+        ].map(prefix)
     },
 
     {
@@ -47,7 +48,7 @@ const galleries = [
         title: 'Mixed Media',
         type: 'gallery',
         count: '12 Items',
-        cover: '/Mixed Media/32442.jpg',
+        cover: prefix('/Mixed Media/32442.jpg'),
         images: [
             '/Mixed Media/3 final.png',
             '/Mixed Media/1 final.png',
@@ -61,14 +62,14 @@ const galleries = [
             '/Mixed Media/PicsArt_10-29-12.31.46 (1).jpg',
             '/Mixed Media/Picsart_23-03-01_12-50-14-325.jpg',
             '/Mixed Media/RED_1633534674671.jpeg'
-        ]
+        ].map(prefix)
     },
     {
         id: 'logo',
         title: 'Logos',
         type: 'gallery',
         count: '9 Items',
-        cover: '/logo/logos.png',
+        cover: prefix('/logo/logos.png'),
         images: [
             '/logo/main.png',
             '/logo/3.png',
@@ -79,7 +80,7 @@ const galleries = [
             '/logo/Group 35.png',
             '/logo/Group 45.png',
             '/logo/Group 10.png'
-        ]
+        ].map(prefix)
     },
 
     {
@@ -87,7 +88,7 @@ const galleries = [
         title: 'Posters',
         type: 'gallery',
         count: '16 Items',
-        cover: '/Posters/222.png',
+        cover: prefix('/Posters/222.png'),
         images: [
             '/Posters/final.png',
             '/Posters/razor story.png',
@@ -102,14 +103,14 @@ const galleries = [
             '/Posters/Picture3.png',
             '/Posters/PicsArt_05-31-10.08.45.jpg',
             '/Posters/PicsArt_09-02-05.03.24.jpg'
-        ]
+        ].map(prefix)
     },
     {
         id: 'ai',
         title: 'Generative AI',
         type: 'gallery',
         count: '13 Items',
-        cover: '/Generative AI/flight.png',
+        cover: prefix('/Generative AI/flight.png'),
         images: [
             '/Generative AI/crystals.png',
             '/Generative AI/electricity.png',
@@ -124,14 +125,14 @@ const galleries = [
             '/Generative AI/Picsart_23-10-14_20-34-24-476.jpg',
             '/Generative AI/flight.png',
             '/Generative AI/wolf.png'
-        ]
+        ].map(prefix)
     },
     {
         id: 'blender',
         title: 'Blender 3D',
         type: 'gallery',
         count: '12 Items',
-        cover: '/renders/Screenshot 2025-08-21 220130.png',
+        cover: prefix('/renders/Screenshot 2025-08-21 220130.png'),
         images: [
             '/renders/Screenshot 2025-08-21 220130.png',
             '/renders/Screenshot 2025-08-21 220808.png',
@@ -145,7 +146,7 @@ const galleries = [
             '/renders/screen size.png',
             '/renders/underW.png',
             '/renders/untitled.png'
-        ]
+        ].map(prefix)
     },
     {
         id: 'video-1',
@@ -153,7 +154,7 @@ const galleries = [
         type: 'video',
         videoId: '0l5WHzrB4kM',
         count: 'Video',
-        cover: '/renders/darkfor.png',
+        cover: prefix('/renders/darkfor.png'),
         images: []
     },
     {
@@ -162,7 +163,7 @@ const galleries = [
         type: 'video',
         videoId: 'FXY9jAFIrjY',
         count: 'Video',
-        cover: '/renders/Screenshot 2025-08-21 220808.png',
+        cover: prefix('/renders/Screenshot 2025-08-21 220808.png'),
         images: []
     }
 ];
