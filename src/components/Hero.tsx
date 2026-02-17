@@ -78,7 +78,7 @@ export default function Hero() {
                     </div>
 
                     {/* Bottom Right: Name & Roles */}
-                    <div className="absolute bottom-16 right-8 md:right-16 text-right space-y-2 pointer-events-auto">
+                    <div className="absolute bottom-32 md:bottom-16 right-8 md:right-16 text-right space-y-2 pointer-events-auto">
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
