@@ -41,7 +41,7 @@ export default function ProjectOverlay({ project, onClose }: ProjectOverlayProps
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
                         transition={{ duration: 0.3, ease: "easeOut" }}
-                        className="fixed inset-4 md:inset-auto md:top-[10%] md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-5xl md:h-auto md:max-h-[85vh] bg-[#0A0A0A] border border-white/10 rounded-none shadow-2xl z-50 overflow-hidden flex flex-col"
+                        className="fixed inset-4 md:inset-auto md:top-[10%] md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-5xl md:h-auto md:max-h-[85vh] bg-[#0A0A0A] border border-white/10 rounded-3xl shadow-2xl z-50 overflow-hidden flex flex-col"
                     >
                         {/* Header Actions */}
                         <div className="absolute top-4 right-4 z-10 flex gap-2">

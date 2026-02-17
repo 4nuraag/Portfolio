@@ -62,7 +62,8 @@ export default function SkillsSection() {
             camera={{ position: [0, 0, 3.8], fov: 45 }}
             className="w-full h-full"
             dpr={[1, 2]} // Optimize pixel ratio
-            style={{ pointerEvents: 'auto' }} // Ensure interaction
+            dpr={[1, 2]} // Optimize pixel ratio
+            style={{ pointerEvents: 'auto', touchAction: 'pan-y' }} // Ensure interaction but allow scroll
           >
             {/* Ambient Light for any potential standard materials */}
             <ambientLight intensity={0.5} />
@@ -73,6 +74,7 @@ export default function SkillsSection() {
             <OrbitControls
               enableZoom={false}
               enablePan={false}
+              enableRotate={!isMobile} // Disable rotation on mobile to allow scrolling
               autoRotate
               autoRotateSpeed={0.5}
             />
