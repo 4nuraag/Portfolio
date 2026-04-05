@@ -192,6 +192,12 @@ export default function VisualGallery() {
     const [gap, setGap] = useState(24);
     const containerRef = useRef<HTMLDivElement>(null);
 
+    // Mobile carousel refs
+    const mobileScrollRef = useRef<HTMLDivElement>(null);
+    const mobileCardRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const [mobileActiveIndex, setMobileActiveIndex] = useState(0);
+    const [isMobile, setIsMobile] = useState(false);
+
     const getCardWidth = (item: typeof galleries[0]) => {
         if (typeof window !== 'undefined' && window.innerWidth < 768) {
             return window.innerWidth * 0.85;
@@ -220,6 +226,49 @@ export default function VisualGallery() {
         window.addEventListener('resize', calculateOffset);
         return () => window.removeEventListener('resize', calculateOffset);
     }, [currentIndex, extendedGalleries]);
+
+    // Track mobile viewport
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // Track mobile scroll position
+    useEffect(() => {
+        const container = mobileScrollRef.current;
+        if (!container) return;
+
+        const handleScroll = () => {
+            const scrollLeft = container.scrollLeft;
+            const containerWidth = container.clientWidth;
+            const index = Math.round(scrollLeft / (containerWidth * 0.85 + 24));
+            setMobileActiveIndex(Math.min(Math.max(index, 0), galleries.length - 1));
+        };
+
+        container.addEventListener('scroll', handleScroll, { passive: true });
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const scrollMobileToIndex = (index: number) => {
+        const card = mobileCardRefs.current[index];
+        if (card && mobileScrollRef.current) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+    };
+
+    const mobileNext = () => {
+        const next = Math.min(mobileActiveIndex + 1, galleries.length - 1);
+        setMobileActiveIndex(next);
+        scrollMobileToIndex(next);
+    };
+
+    const mobilePrev = () => {
+        const prev = Math.max(mobileActiveIndex - 1, 0);
+        setMobileActiveIndex(prev);
+        scrollMobileToIndex(prev);
+    };
 
     // Navigation
     const nextSlide = () => {
@@ -284,8 +333,64 @@ export default function VisualGallery() {
                     animate={isInView ? "visible" : "hidden"}
                     className="relative group/carousel"
                 >
-                    {/* Carousel Track */}
-                    <div className="relative w-full overflow-visible" ref={containerRef}>
+                    {/* Mobile Native Carousel Track */}
+                    <div ref={mobileScrollRef} className="flex md:hidden gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-8 px-4 -mx-4 mt-4">
+                        {galleries.map((gallery, index) => {
+                            const isVideo = gallery.type === 'video';
+                            const aspectClass = isVideo ? 'aspect-video' : 'aspect-[4/5]';
+
+                            return (
+                                <motion.div
+                                    key={`mobile-${gallery.id}-${index}`}
+                                    ref={(node: HTMLDivElement | null) => {
+                                        mobileCardRefs.current[index] = node;
+                                    }}
+                                    onClick={() => {
+                                        if (isVideo && (gallery as any).videoId) {
+                                            setSelectedVideo((gallery as any).videoId);
+                                        } else {
+                                            setSelectedGallery({ category: gallery.title, images: gallery.images });
+                                        }
+                                    }}
+                                    className={`relative flex-shrink-0 w-[85vw] ${aspectClass} rounded-3xl overflow-hidden cursor-pointer group border border-border bg-muted/20 backdrop-blur-sm snap-center`}
+                                >
+                                    <div className="absolute inset-0">
+                                        <Image
+                                            src={gallery.cover}
+                                            alt={gallery.title}
+                                            fill
+                                            className="object-cover opacity-80 transition-all duration-700"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                                    </div>
+
+                                    <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                                        <h4 className="text-primary text-xs font-bold uppercase tracking-widest mb-2">
+                                            {gallery.count}
+                                        </h4>
+                                        <h3 className="font-bold text-white mb-2 leading-tight text-2xl drop-shadow-md">
+                                            {gallery.title}
+                                        </h3>
+                                        <div className="flex items-center gap-2 text-white/80 text-sm">
+                                            <span>{isVideo ? 'Watch Video' : 'View Gallery'}</span>
+                                            <ArrowUpRight size={16} />
+                                        </div>
+                                    </div>
+
+                                    {isVideo && (
+                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
+                                                <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[18px] border-l-white border-b-[10px] border-b-transparent ml-1" />
+                                            </div>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Desktop Carousel Track */}
+                    <div className="hidden md:block relative w-full overflow-visible" ref={containerRef}>
                         <motion.div
                             className="flex gap-6 md:gap-8 items-center"
                             animate={{ x: -scrollOffset }}
@@ -393,7 +498,7 @@ export default function VisualGallery() {
                         className="flex justify-center items-center gap-6 mt-12 md:mt-16"
                     >
                         <motion.button
-                            onClick={prevSlide}
+                            onClick={isMobile ? mobilePrev : prevSlide}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             transition={{ type: "spring", stiffness: 400, damping: 15 }}
@@ -408,10 +513,15 @@ export default function VisualGallery() {
                                 <button
                                     key={index}
                                     onClick={() => {
-                                        setIsTransitioning(true);
-                                        setCurrentIndex(totalItems + index);
+                                        if (isMobile) {
+                                            setMobileActiveIndex(index);
+                                            scrollMobileToIndex(index);
+                                        } else {
+                                            setIsTransitioning(true);
+                                            setCurrentIndex(totalItems + index);
+                                        }
                                     }}
-                                    className={`h-2 rounded-full transition-all duration-500 ${index === displayIndex
+                                    className={`h-2 rounded-full transition-all duration-500 ${index === (isMobile ? mobileActiveIndex : displayIndex)
                                         ? 'w-8 bg-primary'
                                         : 'w-2 bg-foreground/20 hover:bg-foreground/40'
                                         }`}
@@ -422,7 +532,7 @@ export default function VisualGallery() {
                         </div>
 
                         <motion.button
-                            onClick={nextSlide}
+                            onClick={isMobile ? mobileNext : nextSlide}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             transition={{ type: "spring", stiffness: 400, damping: 15 }}

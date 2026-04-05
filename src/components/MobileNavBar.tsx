@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Home, User, Briefcase, Image as ImageIcon, Mail } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { EASE_PREMIUM } from '@/lib/animations';
 
 const navItems = [
@@ -69,23 +69,41 @@ export default function MobileNavBar() {
     }, []);
 
     return (
-        <div className="fixed bottom-0 left-0 w-full z-50 md:hidden pb-safe">
-            <div className="absolute inset-0 bg-background/80 backdrop-blur-xl border-t border-border" />
-
-            <nav className="relative flex justify-around items-center px-2 py-3 pb-5">
+        <div className="fixed bottom-5 left-0 right-0 z-50 md:hidden flex justify-center px-4">
+            {/* Floating Dock Container */}
+            <motion.nav
+                initial={{ y: 80, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 24,
+                    delay: 0.5,
+                }}
+                className="relative flex items-center gap-1 px-2 py-2 rounded-full border border-white/10 shadow-lg shadow-black/20"
+                style={{
+                    background: 'rgba(10, 10, 10, 0.75)',
+                    backdropFilter: 'blur(20px) saturate(180%)',
+                    WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+                }}
+            >
                 {navItems.map((item) => {
                     const isActive = activeSection === item.id;
                     return (
-                        <div
+                        <motion.button
                             key={item.id}
                             onClick={() => scrollToSection(item.target, item.id)}
-                            className="flex flex-col items-center justify-center w-full cursor-pointer group relative"
+                            className="relative flex items-center justify-center rounded-full cursor-pointer z-10"
+                            whileTap={{ scale: 0.9 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                            style={{ padding: isActive ? '8px 16px' : '10px' }}
+                            aria-label={item.label}
                         >
-                            {/* Active indicator — slides between items with spring */}
+                            {/* Active pill background — slides between items */}
                             {isActive && (
                                 <motion.div
-                                    layoutId="mobile-nav-indicator"
-                                    className="absolute -top-3 w-8 h-1 bg-primary rounded-b-full"
+                                    layoutId="floating-dock-pill"
+                                    className="absolute inset-0 rounded-full bg-primary"
                                     transition={{
                                         type: "spring",
                                         stiffness: 350,
@@ -94,46 +112,45 @@ export default function MobileNavBar() {
                                 />
                             )}
 
+                            {/* Icon */}
                             <motion.div
-                                whileTap={{ scale: 0.85 }}
-                                transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                                className="flex flex-col items-center gap-1"
+                                animate={{
+                                    scale: isActive ? 1.05 : 1,
+                                }}
+                                transition={{
+                                    type: "spring",
+                                    stiffness: 300,
+                                    damping: 20,
+                                }}
+                                className={`relative z-10 transition-colors duration-300 ${
+                                    isActive ? 'text-primary-foreground' : 'text-white/50'
+                                }`}
+                                style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
                             >
-                                {/* Icon — springs up when active */}
-                                <motion.div
-                                    animate={{
-                                        y: isActive ? -2 : 0,
-                                        scale: isActive ? 1.1 : 1,
-                                    }}
-                                    transition={{
-                                        type: "spring",
-                                        stiffness: 300,
-                                        damping: 20,
-                                    }}
-                                    className={`transition-colors duration-500 ${isActive ? 'text-primary' : 'text-muted-foreground'
-                                        }`}
-                                    style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
-                                >
-                                    <item.icon
-                                        size={24}
-                                        strokeWidth={isActive ? 2.5 : 2}
-                                    />
-                                </motion.div>
-
-                                {/* Label */}
-                                <motion.span
-                                    animate={{ opacity: isActive ? 1 : 0.6 }}
-                                    transition={{ duration: 0.3, ease: EASE_PREMIUM }}
-                                    className={`text-[10px] font-medium tracking-wide ${isActive ? 'text-primary' : 'text-muted-foreground'
-                                        }`}
-                                >
-                                    {item.label}
-                                </motion.span>
+                                <item.icon
+                                    size={20}
+                                    strokeWidth={isActive ? 2.5 : 1.8}
+                                />
                             </motion.div>
-                        </div>
+
+                            {/* Label — only visible on active item */}
+                            <AnimatePresence mode="wait">
+                                {isActive && (
+                                    <motion.span
+                                        initial={{ width: 0, opacity: 0, marginLeft: 0 }}
+                                        animate={{ width: 'auto', opacity: 1, marginLeft: 6 }}
+                                        exit={{ width: 0, opacity: 0, marginLeft: 0 }}
+                                        transition={{ duration: 0.25, ease: EASE_PREMIUM }}
+                                        className="relative z-10 text-[11px] font-bold tracking-wide text-primary-foreground whitespace-nowrap overflow-hidden"
+                                    >
+                                        {item.label}
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
+                        </motion.button>
                     );
                 })}
-            </nav>
+            </motion.nav>
         </div>
     );
 }

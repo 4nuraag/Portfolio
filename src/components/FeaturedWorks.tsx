@@ -282,6 +282,12 @@ export default function FeaturedWorks() {
     const containerRef = useRef<HTMLDivElement>(null);
     const cardRef = useRef<HTMLDivElement>(null);
 
+    // Mobile scroll carousel refs
+    const mobileScrollRef = useRef<HTMLDivElement>(null);
+    const mobileCardRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const [mobileActiveIndex, setMobileActiveIndex] = useState(0);
+    const [isMobile, setIsMobile] = useState(false);
+
     // Section reveal
     const { ref: sectionRef, isInView } = useScrollReveal({ amount: 0.08 });
 
@@ -291,12 +297,49 @@ export default function FeaturedWorks() {
                 setCardWidth(cardRef.current.offsetWidth);
             }
             setGap(window.innerWidth >= 768 ? 32 : 24);
+            setIsMobile(window.innerWidth < 768);
         };
 
         updateDimensions();
         window.addEventListener('resize', updateDimensions);
         return () => window.removeEventListener('resize', updateDimensions);
     }, []);
+
+    // Track mobile scroll position to highlight the active dot
+    useEffect(() => {
+        const container = mobileScrollRef.current;
+        if (!container) return;
+
+        const handleScroll = () => {
+            const scrollLeft = container.scrollLeft;
+            const containerWidth = container.clientWidth;
+            const index = Math.round(scrollLeft / (containerWidth * 0.85 + 16));
+            setMobileActiveIndex(Math.min(Math.max(index, 0), projects.length - 1));
+        };
+
+        container.addEventListener('scroll', handleScroll, { passive: true });
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    // Scroll mobile carousel to a specific index
+    const scrollMobileToIndex = (index: number) => {
+        const card = mobileCardRefs.current[index];
+        if (card && mobileScrollRef.current) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+    };
+
+    const mobileNext = () => {
+        const next = Math.min(mobileActiveIndex + 1, projects.length - 1);
+        setMobileActiveIndex(next);
+        scrollMobileToIndex(next);
+    };
+
+    const mobilePrev = () => {
+        const prev = Math.max(mobileActiveIndex - 1, 0);
+        setMobileActiveIndex(prev);
+        scrollMobileToIndex(prev);
+    };
 
     // Navigation Logic
     const nextSlide = () => {
@@ -366,14 +409,16 @@ export default function FeaturedWorks() {
                     className="relative group/carousel"
                 >
                     {/* Mobile Native Carousel Track */}
-                    <div className="flex md:hidden gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-8 px-4 -mx-4 mt-8">
+                    <div ref={mobileScrollRef} className="flex md:hidden gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-8 px-4 -mx-4 mt-8">
                         {projects.map((project, i) => (
                             <MagneticCard
                                 key={`mobile-${project.id}-${i}`}
                                 project={project}
                                 index={i}
                                 isMobileCard={true}
-                                refAttr={null}
+                                refAttr={(node: HTMLDivElement | null) => {
+                                    mobileCardRefs.current[i] = node;
+                                }}
                                 onSelect={setSelectedProject}
                             />
                         ))}
@@ -430,7 +475,7 @@ export default function FeaturedWorks() {
                         className="flex justify-center items-center gap-6 mt-12 md:mt-16"
                     >
                         <motion.button
-                            onClick={prevSlide}
+                            onClick={isMobile ? mobilePrev : prevSlide}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             transition={{ type: "spring", stiffness: 400, damping: 15 }}
@@ -445,10 +490,15 @@ export default function FeaturedWorks() {
                                 <button
                                     key={index}
                                     onClick={() => {
-                                        setIsTransitioning(true);
-                                        setCurrentIndex(totalItems + index);
+                                        if (isMobile) {
+                                            setMobileActiveIndex(index);
+                                            scrollMobileToIndex(index);
+                                        } else {
+                                            setIsTransitioning(true);
+                                            setCurrentIndex(totalItems + index);
+                                        }
                                     }}
-                                    className={`h-2 rounded-full transition-all duration-500 ${index === displayIndex
+                                    className={`h-2 rounded-full transition-all duration-500 ${index === (isMobile ? mobileActiveIndex : displayIndex)
                                         ? 'w-8 bg-primary'
                                         : 'w-2 bg-foreground/20 hover:bg-foreground/40'
                                         }`}
@@ -459,7 +509,7 @@ export default function FeaturedWorks() {
                         </div>
 
                         <motion.button
-                            onClick={nextSlide}
+                            onClick={isMobile ? mobileNext : nextSlide}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             transition={{ type: "spring", stiffness: 400, damping: 15 }}

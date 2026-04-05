@@ -68,7 +68,7 @@ export default function ContactFooter() {
     const { ref, isInView } = useScrollReveal({ amount: 0.2 });
 
     return (
-        <footer id="contact-section" className="w-full text-foreground py-16 px-6 md:px-16 border-t border-border pb-32 md:pb-16">
+        <footer id="contact-section" className="w-full text-foreground py-16 px-6 md:px-16 border-t border-border pb-24 md:pb-16">
             <div ref={ref} className="max-w-7xl mx-auto">
 
                 {/* =========================================

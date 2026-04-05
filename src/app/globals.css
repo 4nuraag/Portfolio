@@ -203,3 +203,14 @@ p {
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+/* Hide scrollbar for native-scroll carousels */
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none,
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

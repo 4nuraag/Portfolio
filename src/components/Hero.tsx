@@ -207,7 +207,7 @@ export default function Hero() {
                     {/* Bottom Right: Name & Roles — staggered entrance */}
                     <div
                         ref={contentRef}
-                        className="absolute bottom-48 md:bottom-16 right-8 md:right-16 text-right space-y-2 pointer-events-auto"
+                        className="absolute bottom-32 md:bottom-16 left-4 right-4 md:left-auto md:right-16 text-right space-y-2 pointer-events-auto"
                     >
                         <motion.div
                             variants={staggerContainer}
@@ -217,7 +217,10 @@ export default function Hero() {
                         >
                             {/* Name — arrives first with blur-to-sharp + slide-up */}
                             <motion.div variants={staggerChild}>
-                                <h1 className="text-[5.5vw] md:text-7xl font-semibold text-white tracking-tight uppercase drop-shadow-lg whitespace-nowrap w-full">
+                                <h1
+                                    className="font-semibold text-white tracking-tight uppercase drop-shadow-lg whitespace-nowrap w-full"
+                                    style={{ fontSize: 'clamp(2rem, 4.8vw, 4.5rem)' }}
+                                >
                                     ANURAAG VINOD KUMAR
                                 </h1>
                             </motion.div>
@@ -246,26 +249,7 @@ export default function Hero() {
                                 />
                             </motion.div>
 
-                            {/* Scroll indicator — arrives last */}
-                            <motion.div
-                                variants={staggerChild}
-                                className="flex justify-end pt-6"
-                            >
-                                <motion.div
-                                    animate={{ y: [0, 8, 0] }}
-                                    transition={{
-                                        duration: 2,
-                                        repeat: Infinity,
-                                        ease: "easeInOut",
-                                    }}
-                                    className="flex flex-col items-center gap-2 text-white/40"
-                                >
-                                    <span className="text-[10px] uppercase tracking-[0.3em] font-medium">
-                                        Scroll
-                                    </span>
-                                    <div className="w-[1px] h-8 bg-gradient-to-b from-white/40 to-transparent" />
-                                </motion.div>
-                            </motion.div>
+
                         </motion.div>
                     </div>
                 </motion.div>
