@@ -82,7 +82,7 @@ export default function ProjectOverlay({ project, onClose }: ProjectOverlayProps
                             </div>
 
                             {/* Content panel */}
-                            <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col overflow-y-auto" style={{ minWidth: 0, overflow: 'hidden', flex: 1 }}>
+                            <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col overflow-y-auto" style={{ minWidth: 0, overflow: 'hidden' }}>
                                 <div className="mb-6 md:mb-8">
                                     <h3
                                         className="text-primary/70 text-[10px] uppercase tracking-[0.2em] font-semibold mb-3"
@@ -111,7 +111,7 @@ export default function ProjectOverlay({ project, onClose }: ProjectOverlayProps
                                     </p>
                                 </div>
 
-                                <div className="space-y-6 mt-auto">
+                                <div className="space-y-6">
                                     {/* Tags */}
                                     <div>
                                         <h4 className="text-muted-foreground/50 text-[9px] font-bold uppercase tracking-[0.2em] mb-3" style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}>

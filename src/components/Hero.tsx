@@ -146,13 +146,13 @@ export default function Hero() {
                 ========================================= */}
             {/* Overall dark overlay that deepens on scroll */}
             <motion.div
-                className="absolute inset-0 bg-black/30 z-[1]"
+                className="absolute inset-0 bg-black/15 z-[1]"
                 style={{ opacity: overlayOpacity }}
             />
 
-            {/* Dark overlay on top of video for text legibility */}
+            {/* Subtle dark overlay for text legibility */}
             <div
-                className="absolute inset-0 bg-black/45 z-[1] pointer-events-none"
+                className="absolute inset-0 bg-black/20 z-[1] pointer-events-none"
             />
 
             {/* Bottom gradient — smooth blend to dark background */}
@@ -172,24 +172,41 @@ export default function Hero() {
             />
 
             {/* =========================================
-                CONTENT — Bottom-right editorial layout
-                (matching reference image)
+                CONTENT — Top-left on mobile, bottom-right on desktop
                 ========================================= */}
             <motion.div
                 ref={contentRef}
-                className="absolute inset-0 z-10 flex flex-col justify-end px-4 md:px-16 pb-28 md:pb-24"
+                className="absolute z-10 px-4 md:px-16 pt-28 pb-8 md:pb-24 top-0 left-0 right-0 md:top-auto md:bottom-0 md:left-auto md:right-0"
                 style={{ y: contentY, opacity: contentOpacity }}
             >
                 <motion.div
                     variants={staggerContainer}
                     initial="hidden"
                     animate={isInView ? 'visible' : 'hidden'}
-                    className="max-w-[1400px] w-full mx-auto flex flex-col items-end"
+                    className="max-w-[1400px] ml-auto flex flex-col md:items-end md:w-fit"
                 >
-                    {/* Name — Large editorial headline, right-aligned */}
+                    {/* "Portfolio" label — top-left on mobile, inline with content */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                        transition={{ duration: 1.0, ease: PREMIUM_EASE, delay: 0.6 }}
+                        className="mb-6 md:hidden"
+                    >
+                        <span
+                            className="text-white font-bold text-xl tracking-tight"
+                            style={{
+                                fontFamily: "'Google Sans', system-ui, sans-serif",
+                                textShadow: '0 2px 20px rgba(0,0,0,0.4)',
+                            }}
+                        >
+                            Portfolio
+                        </span>
+                    </motion.div>
+
+                    {/* Name */}
                     <motion.div variants={fadeUp} className="overflow-hidden">
                         <h1
-                            className="hero-title font-bold text-white uppercase leading-[0.9] text-right"
+                            className="hero-title font-bold text-white uppercase leading-[0.9] text-left md:text-right"
                             style={{
                                 fontFamily: "'Google Sans', system-ui, sans-serif",
                                 fontSize: 'clamp(3rem, 7vw, 6rem)',
@@ -203,17 +220,17 @@ export default function Hero() {
                     </motion.div>
 
                     {/* Accent line */}
-                    <motion.div variants={fadeUp} className="mt-4 md:mt-5 flex justify-end w-full">
+                    <motion.div variants={fadeUp} className="mt-4 md:mt-5 flex justify-start md:justify-end w-full">
                         <div className="w-16 md:w-24 h-[2px] bg-primary/60" />
                     </motion.div>
 
                     {/* Cycling DecryptedText roles */}
                     <motion.div
                         variants={fadeUp}
-                        className="mt-4 md:mt-5 flex justify-end w-full h-8 md:h-10"
+                        className="mt-4 md:mt-5 flex justify-start md:justify-end w-full h-8 md:h-10"
                     >
                         <div
-                            className="text-white/70 text-sm md:text-base font-light tracking-[0.2em] uppercase text-right"
+                            className="text-white/70 text-sm md:text-base font-light tracking-[0.2em] uppercase text-left md:text-right"
                             style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
                         >
                             <CyclingDecryptedText />
@@ -223,16 +240,16 @@ export default function Hero() {
             </motion.div>
 
             {/* =========================================
-                "PORTFOLIO" label — top left
+                "PORTFOLIO" label — desktop only (top left)
                 ========================================= */}
             <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
                 transition={{ duration: 1.0, ease: PREMIUM_EASE, delay: 0.6 }}
-                className="absolute top-8 left-4 md:top-12 md:left-16 z-10"
+                className="absolute top-8 left-16 z-10 hidden md:block"
             >
                 <span
-                    className="text-white font-bold text-xl md:text-2xl tracking-tight"
+                    className="text-white font-bold text-2xl tracking-tight"
                     style={{
                         fontFamily: "'Google Sans', system-ui, sans-serif",
                         textShadow: '0 2px 20px rgba(0,0,0,0.4)',

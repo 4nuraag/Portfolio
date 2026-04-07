@@ -19,31 +19,33 @@ const galleries = [
         title: 'Illustrations',
         type: 'gallery',
         count: '10 Items',
-        cover: './Illustration/PicsArt_05-31-10.01.23.jpg',
+        cover: './Illustration/main.webp',
         images: [
-            './Illustration/main.png',
-            './Illustration/final.png',
-            './Illustration/finalp.png',
-            './Illustration/1.2.png',
-            './Illustration/PicsArt_05-31-10.01.23.jpg',
-            './Illustration/PicsArt_06-24-01.00.55.jpg',
-            './Illustration/Remini2021120312hhhhh4842326.png',
-            './Illustration/fgdgfdg.png',
-            './Illustration/sega.png',
-            './Illustration/var1.png'
+            './Illustration/main.webp',
+            './Illustration/stranger.webp',
+            './Illustration/rsg.webp',
+            './Illustration/8mile.webp',
+            './Illustration/dhanush.webp',
+            './Illustration/arsenal.webp',
+            './Illustration/liluzi.webp',
+            './Illustration/cbe.webp',
+            './Illustration/phoebe.webp',
+            './Illustration/bike.webp'
         ]
     },
     {
         id: 'lookbooks',
         title: 'Look Books',
         type: 'gallery',
-        count: '4 Items',
-        cover: './Look Books/PIC03752.jpg',
+        count: '6 Items',
+        cover: './Look Books/PIC03752.webp',
         images: [
-            './Look Books/Desktop - 15.png',
-            './Look Books/Frame 35.png',
-            './Look Books/Frame 46.png',
-            './Look Books/45.png'
+            './Look Books/Desktop - 15.webp',
+            './Look Books/Frame 35.webp',
+            './Look Books/Frame 46.webp',
+            './Look Books/45.webp',
+            './Look Books/PIC03752.webp',
+            './Look Books/Desktop - 1.webp'
         ]
     },
     {
@@ -51,38 +53,40 @@ const galleries = [
         title: 'Mixed Media',
         type: 'gallery',
         count: '12 Items',
-        cover: './Mixed Media/32442.jpg',
+        cover: './Mixed Media/gta.webp',
         images: [
-            './Mixed Media/3 final.png',
-            './Mixed Media/1 final.png',
-            './Mixed Media/2 final.png',
-            './Mixed Media/4 final.png',
-            './Mixed Media/5 final.png',
-            './Mixed Media/32442.jpg',
-            './Mixed Media/PicsArt_06-15-03.02.12.jpg',
-            './Mixed Media/PicsArt_10-02-07.32.29.jpg',
-            './Mixed Media/PicsArt_10-08-03.15.37.png',
-            './Mixed Media/PicsArt_10-29-12.31.46 (1).jpg',
-            './Mixed Media/Picsart_23-03-01_12-50-14-325.jpg',
-            './Mixed Media/RED_1633534674671.jpeg'
+            './Mixed Media/2amw.webp',
+            './Mixed Media/alternate.webp',
+            './Mixed Media/future.webp',
+            './Mixed Media/galaxy.webp',
+            './Mixed Media/gta.webp',
+            './Mixed Media/retro1.webp',
+            './Mixed Media/retro2.webp',
+            './Mixed Media/retro3.webp',
+            './Mixed Media/retro4.webp',
+            './Mixed Media/retro5.webp',
+            './Mixed Media/squid.webp',
+            './Mixed Media/superman.webp'
         ]
     },
     {
         id: 'logo',
         title: 'Logos',
         type: 'gallery',
-        count: '9 Items',
-        cover: './logo/logos.png',
+        count: '11 Items',
+        cover: './logo/logos.webp',
         images: [
-            './logo/main.png',
-            './logo/3.png',
-            './logo/everyrpmsscounts.png',
-            './logo/Untitled-2.png',
-            './logo/gg.png',
-            './logo/main pattern.png',
-            './logo/Group 35.png',
-            './logo/Group 45.png',
-            './logo/Group 10.png'
+            './logo/logos.webp',
+            './logo/arsenal.webp',
+            './logo/budapest.webp',
+            './logo/everyrpmsscounts.webp',
+            './logo/food.webp',
+            './logo/missingapron.webp',
+            './logo/miraai.webp',
+            './logo/pirate.webp',
+            './logo/rastaway.webp',
+            './logo/rastawaypremium.webp',
+            './logo/smi.webp'
         ]
     },
     {
@@ -90,21 +94,24 @@ const galleries = [
         title: 'Posters',
         type: 'gallery',
         count: '16 Items',
-        cover: './Posters/222.png',
+        cover: './Posters/222.webp',
         images: [
-            './Posters/final.png',
-            './Posters/razor story.png',
-            './Posters/arthur cover 1.png',
-            './Posters/aguerooo.png',
-            './Posters/em2.png',
-            './Posters/12.png',
-            './Posters/222.png',
-            './Posters/2222.png',
-            './Posters/23.png',
-            './Posters/34.png',
-            './Posters/Picture3.png',
-            './Posters/PicsArt_05-31-10.08.45.jpg',
-            './Posters/PicsArt_09-02-05.03.24.jpg'
+            './Posters/final.webp',
+            './Posters/razor story.webp',
+            './Posters/arthur cover 1.webp',
+            './Posters/aguerooo.webp',
+            './Posters/em2.webp',
+            './Posters/12.webp',
+            './Posters/222.webp',
+            './Posters/2222.webp',
+            './Posters/23.webp',
+            './Posters/34.webp',
+            './Posters/Picture3.webp',
+            './Posters/Picture1.webp',
+            './Posters/Picture2.webp',
+            './Posters/Picture4.webp',
+            './Posters/PicsArt_05-31-10.08.45.webp',
+            './Posters/PicsArt_09-02-05.03.24.webp'
         ]
     },
     {
@@ -134,20 +141,20 @@ const galleries = [
         title: 'Blender 3D',
         type: 'gallery',
         count: '12 Items',
-        cover: './renders/Screenshot 2025-08-21 220130.png',
+        cover: './renders/Screenshot 2025-08-21 220130.webp',
         images: [
-            './renders/Screenshot 2025-08-21 220130.png',
-            './renders/Screenshot 2025-08-21 220808.png',
-            './renders/aztec.png',
-            './renders/circle.png',
-            './renders/darkfor.png',
-            './renders/expl.png',
-            './renders/guitarfinal.png',
-            './renders/light.png',
-            './renders/render 1.png',
-            './renders/screen size.png',
-            './renders/underW.png',
-            './renders/untitled.png'
+            './renders/Screenshot 2025-08-21 220130.webp',
+            './renders/Screenshot 2025-08-21 220808.webp',
+            './renders/aztec.webp',
+            './renders/circle.webp',
+            './renders/darkfor.webp',
+            './renders/expl.webp',
+            './renders/guitarfinal.webp',
+            './renders/light.webp',
+            './renders/render 1.webp',
+            './renders/screen size.webp',
+            './renders/underW.webp',
+            './renders/untitled.webp'
         ]
     },
     {
@@ -156,7 +163,7 @@ const galleries = [
         type: 'video',
         videoId: '0l5WHzrB4kM',
         count: 'Video',
-        cover: './renders/darkfor.png',
+        cover: './renders/darkfor.webp',
         images: []
     },
     {
@@ -165,7 +172,7 @@ const galleries = [
         type: 'video',
         videoId: 'FXY9jAFIrjY',
         count: 'Video',
-        cover: './renders/Screenshot 2025-08-21 220808.png',
+        cover: './renders/Screenshot 2025-08-21 220808.webp',
         images: []
     }
 ];

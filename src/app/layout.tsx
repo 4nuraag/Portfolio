@@ -7,7 +7,9 @@ export const metadata: Metadata = {
   title: "Anuraag Vinod Kumar — Portfolio",
   description: "Creative Technologist, UI/UX Designer, and Full-Stack Developer. Exploring the intersection of design and engineering through interactive experiences, data visualization, and digital media.",
   icons: {
-    icon: "/favicon.png",
+    icon: [
+      { url: "/favicon.png", type: "image/png" },
+    ],
   },
   openGraph: {
     title: "Anuraag Vinod Kumar — Portfolio",
