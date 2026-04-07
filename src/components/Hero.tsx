@@ -136,7 +136,7 @@ export default function Hero() {
                     className="w-full h-full object-cover"
                     style={{ objectPosition: '80% center' }}
                 >
-                    <source src="/hero_bg_video.mp4" type="video/mp4" />
+                    <source src={process.env.NODE_ENV === 'production' ? '/Portfolio/hero_bg_video.mp4' : '/hero_bg_video.mp4'} type="video/mp4" />
                 </video>
             </motion.div>
 
