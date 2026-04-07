@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { useInView, useScroll, useTransform, useSpring, MotionValue } from 'framer-motion';
+import { useInView, useScroll, useTransform, useSpring } from 'framer-motion';
 
 // =============================================
 // PREMIUM EASING CURVES

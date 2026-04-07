@@ -14,7 +14,6 @@ interface GalleryOverlayProps {
 export default function GalleryOverlay({ category, images, onClose }: GalleryOverlayProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    // Reset index when category changes
     useEffect(() => {
         setCurrentIndex(0);
     }, [category]);
@@ -29,7 +28,6 @@ export default function GalleryOverlay({ category, images, onClose }: GalleryOve
         setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
     };
 
-    // Keyboard navigation
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!category) return;
@@ -54,21 +52,32 @@ export default function GalleryOverlay({ category, images, onClose }: GalleryOve
                         onClick={onClose}
                         className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 cursor-pointer flex flex-col items-center justify-center p-4 md:p-8"
                     >
-                        {/* Header Area */}
+                        {/* Header */}
                         <div className="w-full max-w-[95vw] flex justify-between items-start mb-4 md:mb-6 shrink-0 z-[60]" onClick={(e) => e.stopPropagation()}>
                             <div>
-                                <h2 className="text-white/50 text-sm font-mono uppercase tracking-widest">Gallery</h2>
-                                <h1 className="text-white text-2xl font-bold">{category}</h1>
+                                <h2
+                                    className="text-primary/60 text-[10px] font-semibold uppercase tracking-[0.2em]"
+                                    style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
+                                >
+                                    Gallery
+                                </h2>
+                                <h1
+                                    className="text-white text-2xl font-bold tracking-tight"
+                                    style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
+                                >
+                                    {category}
+                                </h1>
                             </div>
                             <button
                                 onClick={onClose}
-                                className="p-2 -mr-2 text-white/50 hover:text-white transition-colors"
+                                className="p-2 -mr-2 text-white/40 hover:text-white transition-colors"
+                                aria-label="Close gallery"
                             >
-                                <X size={32} />
+                                <X size={28} />
                             </button>
                         </div>
 
-                        {/* Image Container (Native Size) */}
+                        {/* Image */}
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
@@ -86,11 +95,9 @@ export default function GalleryOverlay({ category, images, onClose }: GalleryOve
                                     transition={{ duration: 0.3 }}
                                     className="relative w-full h-full flex items-center justify-center"
                                 >
-                                    {/* Using standard img tag for untampered native rendering if Next/Image is too aggressive, 
-                                        but trying Next/Image with unoptimized first for quality */}
                                     <Image
                                         src={images[currentIndex]}
-                                        alt={`${category} ${currentIndex + 1}`}
+                                        alt={`${category} — image ${currentIndex + 1} of ${images.length}`}
                                         width={1920}
                                         height={1080}
                                         className="max-w-full max-h-full object-contain"
@@ -101,24 +108,33 @@ export default function GalleryOverlay({ category, images, onClose }: GalleryOve
                                 </motion.div>
                             </AnimatePresence>
 
-                            {/* Navigation Overlays */}
+                            {/* Nav */}
                             {images.length > 1 && (
                                 <>
                                     <button
                                         onClick={prevImage}
-                                        className="fixed left-4 top-1/2 -translate-y-1/2 p-4 rounded-full bg-black/50 text-white hover:bg-white hover:text-black transition-all z-[70]"
+                                        className="fixed left-4 top-1/2 -translate-y-1/2 p-3 bg-black/60 text-white/60 hover:bg-primary hover:text-primary-foreground transition-all z-[70]"
+                                        aria-label="Previous image"
                                     >
-                                        <ChevronLeft size={32} />
+                                        <ChevronLeft size={28} />
                                     </button>
                                     <button
                                         onClick={nextImage}
-                                        className="fixed right-4 top-1/2 -translate-y-1/2 p-4 rounded-full bg-black/50 text-white hover:bg-white hover:text-black transition-all z-[70]"
+                                        className="fixed right-4 top-1/2 -translate-y-1/2 p-3 bg-black/60 text-white/60 hover:bg-primary hover:text-primary-foreground transition-all z-[70]"
+                                        aria-label="Next image"
                                     >
-                                        <ChevronRight size={32} />
+                                        <ChevronRight size={28} />
                                     </button>
                                 </>
                             )}
                         </motion.div>
+
+                        {/* Counter */}
+                        {images.length > 1 && (
+                            <div className="mt-4 text-[11px] text-muted-foreground/60 tracking-wider" style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}>
+                                {currentIndex + 1} / {images.length}
+                            </div>
+                        )}
                     </motion.div>
                 </>
             )}

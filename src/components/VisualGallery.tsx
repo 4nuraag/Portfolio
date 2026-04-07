@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowUpRight, ChevronLeft, ChevronRight, Video, Image as ImageIcon } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { motion, useAnimationFrame } from 'framer-motion';
 import Image from 'next/image';
 import GalleryOverlay from './GalleryOverlay';
 import VideoOverlay from './VideoOverlay';
@@ -10,12 +9,10 @@ import {
     staggerContainer,
     revealUp,
     revealFade,
-    revealScale,
     EASE_PREMIUM,
     useScrollReveal,
 } from '@/lib/animations';
 
-// Data Configuration — unchanged
 const galleries = [
     {
         id: 'illustration',
@@ -173,388 +170,191 @@ const galleries = [
     }
 ];
 
+function GalleryItem({
+    gallery,
+    onClick,
+}: {
+    gallery: typeof galleries[0];
+    onClick: () => void;
+}) {
+    const isVideo = gallery.type === 'video';
+
+    return (
+        <motion.div
+            onClick={onClick}
+            className="relative flex-shrink-0 w-[240px] md:w-[280px] lg:w-[320px] snap-center cursor-pointer group"
+            whileHover={{ y: -4 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
+            <div className="relative w-full overflow-hidden border border-white/[0.06] group-hover:border-primary/25 transition-colors duration-200 ease-out aspect-[4/5]">
+                <Image
+                    src={gallery.cover}
+                    alt={gallery.title}
+                    fill
+                    loading="lazy"
+                    className="object-cover transition-transform duration-200 ease-out group-hover:scale-[1.06]"
+                    style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                {isVideo && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-12 h-12 md:w-14 md:h-14 bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-primary/20 group-hover:border-primary/30 transition-all duration-200 ease-out">
+                            <div className="w-0 h-0 border-t-[6px] md:border-t-[8px] border-t-transparent border-l-[10px] md:border-l-[14px] border-l-white border-b-[6px] md:border-b-[8px] border-b-transparent ml-1" />
+                        </div>
+                    </div>
+                )}
+
+                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
+                    <div className="flex items-center justify-between gap-2">
+                        <div className="flex-1">
+                            <h4
+                                className="text-white font-bold text-sm md:text-base tracking-tight leading-tight line-clamp-2"
+                                style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
+                            >
+                                {gallery.title}
+                            </h4>
+                        </div>
+                        <div className="flex-shrink-0">
+                            <span
+                                className="px-2 py-0.5 text-[8px] md:text-[9px] uppercase tracking-wider font-semibold text-primary/90 border border-primary/20 bg-black/40 backdrop-blur-sm"
+                                style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
+                            >
+                                {gallery.count}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </motion.div>
+    );
+}
+
 export default function VisualGallery() {
     const [selectedGallery, setSelectedGallery] = useState<{ category: string, images: string[] } | null>(null);
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-
-    // Section reveal
     const { ref: sectionRef, isInView } = useScrollReveal({ amount: 0.08 });
 
-    // Infinite Scroll Setup
-    const extendedGalleries = [...galleries, ...galleries, ...galleries];
-    const totalItems = galleries.length;
-
-    const [currentIndex, setCurrentIndex] = useState(totalItems);
-    const [isTransitioning, setIsTransitioning] = useState(false);
-
-    const displayIndex = currentIndex % totalItems;
-
-    const [gap, setGap] = useState(24);
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    // Mobile carousel refs
-    const mobileScrollRef = useRef<HTMLDivElement>(null);
-    const mobileCardRefs = useRef<(HTMLDivElement | null)[]>([]);
-    const [mobileActiveIndex, setMobileActiveIndex] = useState(0);
+    // Detect mobile for disabling auto-scroll
     const [isMobile, setIsMobile] = useState(false);
-
-    const getCardWidth = (item: typeof galleries[0]) => {
-        if (typeof window !== 'undefined' && window.innerWidth < 768) {
-            return window.innerWidth * 0.85;
-        }
-        return item.type === 'video' ? (500 * 16 / 9) : 400;
-    };
-
-    const [scrollOffset, setScrollOffset] = useState(0);
-
     useEffect(() => {
-        const calculateOffset = () => {
-            if (typeof window === 'undefined') return;
-
-            const currentGap = window.innerWidth >= 768 ? 32 : 24;
-            setGap(currentGap);
-
-            let offset = 0;
-            for (let i = 0; i < currentIndex; i++) {
-                const item = extendedGalleries[i];
-                offset += getCardWidth(item) + currentGap;
-            }
-            setScrollOffset(offset);
-        };
-
-        calculateOffset();
-        window.addEventListener('resize', calculateOffset);
-        return () => window.removeEventListener('resize', calculateOffset);
-    }, [currentIndex, extendedGalleries]);
-
-    // Track mobile viewport
-    useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 768);
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
+        const check = () => setIsMobile(window.innerWidth < 768);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
     }, []);
 
-    // Track mobile scroll position
-    useEffect(() => {
-        const container = mobileScrollRef.current;
-        if (!container) return;
+    // Core references
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [isHovered, setIsHovered] = useState(false);
 
-        const handleScroll = () => {
-            const scrollLeft = container.scrollLeft;
-            const containerWidth = container.clientWidth;
-            const index = Math.round(scrollLeft / (containerWidth * 0.85 + 24));
-            setMobileActiveIndex(Math.min(Math.max(index, 0), galleries.length - 1));
-        };
+    // Duplicated items specifically for the infinite seamless scroll effect
+    const marqueeItems = [...galleries, ...galleries, ...galleries];
 
-        container.addEventListener('scroll', handleScroll, { passive: true });
-        return () => container.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    const scrollMobileToIndex = (index: number) => {
-        const card = mobileCardRefs.current[index];
-        if (card && mobileScrollRef.current) {
-            card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }
-    };
-
-    const mobileNext = () => {
-        const next = Math.min(mobileActiveIndex + 1, galleries.length - 1);
-        setMobileActiveIndex(next);
-        scrollMobileToIndex(next);
-    };
-
-    const mobilePrev = () => {
-        const prev = Math.max(mobileActiveIndex - 1, 0);
-        setMobileActiveIndex(prev);
-        scrollMobileToIndex(prev);
-    };
-
-    // Navigation
-    const nextSlide = () => {
-        if (!isTransitioning) {
-            setIsTransitioning(true);
-            setCurrentIndex((prev) => prev + 1);
-        }
-    };
-
-    const prevSlide = () => {
-        if (!isTransitioning) {
-            setIsTransitioning(true);
-            setCurrentIndex((prev) => prev - 1);
-        }
-    };
-
-    const handleAnimationComplete = () => {
-        if (currentIndex >= 2 * totalItems) {
-            setIsTransitioning(false);
-            setCurrentIndex(currentIndex - totalItems);
-        } else if (currentIndex < totalItems) {
-            setIsTransitioning(false);
-            setCurrentIndex(currentIndex + totalItems);
+    const handleClick = (gallery: typeof galleries[0]) => {
+        const isVideo = gallery.type === 'video';
+        if (isVideo && (gallery as any).videoId) {
+            setSelectedVideo((gallery as any).videoId);
         } else {
-            setIsTransitioning(false);
+            setSelectedGallery({ category: gallery.title, images: gallery.images });
         }
     };
+
+    // Auto-scroll loop mechanics — only runs on desktop
+    const scrollSpeed = useRef(0.6); // Base speed
+    const currentScroll = useRef(0);
+
+    useAnimationFrame((time, delta) => {
+        if (isMobile || !scrollRef.current || isHovered) return;
+
+        // Native width of one full set of items
+        const rawWidth = scrollRef.current.scrollWidth / 3;
+
+        currentScroll.current += scrollSpeed.current * (delta / 16.66);
+
+        // Seamless loop jump back when we finish the first set
+        if (currentScroll.current >= rawWidth) {
+            currentScroll.current -= rawWidth;
+            scrollRef.current.scrollLeft = currentScroll.current;
+        } else {
+            scrollRef.current.scrollLeft = currentScroll.current;
+        }
+    });
 
     return (
-        <section className="relative w-full text-foreground py-20 px-6 md:px-16 overflow-hidden" id="visual-gallery">
-            <div ref={sectionRef} className="max-w-[1400px] mx-auto">
-
-                {/* =========================================
-                    HEADER — Staggered reveal
-                    ========================================= */}
+        <section className="relative w-full text-foreground py-16 md:py-24 overflow-hidden" id="visual-gallery">
+            <div ref={sectionRef} className="max-w-[1400px] mx-auto px-4 md:px-16">
+                {/* Header */}
                 <motion.div
                     variants={staggerContainer}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
-                    className="flex flex-col justify-center items-center mb-12 relative z-10"
+                    className="mb-10 md:mb-16"
                 >
+                    <motion.p
+                        variants={revealUp}
+                        className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-primary/80 font-medium mb-4"
+                        style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
+                    >
+                        Visual Work
+                    </motion.p>
                     <motion.h2
                         variants={revealUp}
-                        className="text-4xl md:text-7xl font-bold leading-tight text-center"
+                        className="text-3xl md:text-5xl lg:text-6xl font-bold leading-none tracking-tight"
+                        style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
                     >
-                        <span className="text-foreground whitespace-normal md:whitespace-nowrap">
-                            Visual Media Gallery
-                        </span>
+                        <span className="text-foreground">Visual Media Gallery</span>
                     </motion.h2>
-
-                    <motion.div variants={revealFade} className="mt-4">
-                        <div className="w-12 h-[1px] bg-primary/50" />
+                    <motion.div variants={revealFade} className="mt-6">
+                        <div className="w-16 h-[2px] bg-primary/40" />
                     </motion.div>
                 </motion.div>
-
-                {/* =========================================
-                    CAROUSEL — Scale reveal entrance
-                    ========================================= */}
-                <motion.div
-                    variants={revealScale}
-                    initial="hidden"
-                    animate={isInView ? "visible" : "hidden"}
-                    className="relative group/carousel"
-                >
-                    {/* Mobile Native Carousel Track */}
-                    <div ref={mobileScrollRef} className="flex md:hidden gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-8 px-4 -mx-4 mt-4">
-                        {galleries.map((gallery, index) => {
-                            const isVideo = gallery.type === 'video';
-                            const aspectClass = isVideo ? 'aspect-video' : 'aspect-[4/5]';
-
-                            return (
-                                <motion.div
-                                    key={`mobile-${gallery.id}-${index}`}
-                                    ref={(node: HTMLDivElement | null) => {
-                                        mobileCardRefs.current[index] = node;
-                                    }}
-                                    onClick={() => {
-                                        if (isVideo && (gallery as any).videoId) {
-                                            setSelectedVideo((gallery as any).videoId);
-                                        } else {
-                                            setSelectedGallery({ category: gallery.title, images: gallery.images });
-                                        }
-                                    }}
-                                    className={`relative flex-shrink-0 w-[85vw] ${aspectClass} rounded-3xl overflow-hidden cursor-pointer group border border-border bg-muted/20 backdrop-blur-sm snap-center`}
-                                >
-                                    <div className="absolute inset-0">
-                                        <Image
-                                            src={gallery.cover}
-                                            alt={gallery.title}
-                                            fill
-                                            className="object-cover opacity-80 transition-all duration-700"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                                    </div>
-
-                                    <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                                        <h4 className="text-primary text-xs font-bold uppercase tracking-widest mb-2">
-                                            {gallery.count}
-                                        </h4>
-                                        <h3 className="font-bold text-white mb-2 leading-tight text-2xl drop-shadow-md">
-                                            {gallery.title}
-                                        </h3>
-                                        <div className="flex items-center gap-2 text-white/80 text-sm">
-                                            <span>{isVideo ? 'Watch Video' : 'View Gallery'}</span>
-                                            <ArrowUpRight size={16} />
-                                        </div>
-                                    </div>
-
-                                    {isVideo && (
-                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
-                                                <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[18px] border-l-white border-b-[10px] border-b-transparent ml-1" />
-                                            </div>
-                                        </div>
-                                    )}
-                                </motion.div>
-                            );
-                        })}
-                    </div>
-
-                    {/* Desktop Carousel Track */}
-                    <div className="hidden md:block relative w-full overflow-visible" ref={containerRef}>
-                        <motion.div
-                            className="flex gap-6 md:gap-8 items-center"
-                            animate={{ x: -scrollOffset }}
-                            transition={isTransitioning
-                                ? {
-                                    type: "spring",
-                                    stiffness: 200,
-                                    damping: 28,
-                                    mass: 0.8,
-                                }
-                                : { duration: 0 }
-                            }
-                            onAnimationComplete={handleAnimationComplete}
-                            style={{ width: 'max-content' }}
-                            onPanEnd={(e, info) => {
-                                const swipe = info.offset.x;
-                                if (swipe < -50) nextSlide();
-                                else if (swipe > 50) prevSlide();
-                            }}
-                        >
-                            {extendedGalleries.map((gallery, index) => {
-                                const isVideo = gallery.type === 'video';
-                                const aspectClass = isVideo ? 'aspect-video' : 'aspect-[4/5]';
-
-                                return (
-                                    <motion.div
-                                        key={`${gallery.id}-${index}`}
-                                        onClick={() => {
-                                            if (isVideo && (gallery as any).videoId) {
-                                                setSelectedVideo((gallery as any).videoId);
-                                            } else {
-                                                setSelectedGallery({ category: gallery.title, images: gallery.images });
-                                            }
-                                        }}
-                                        className={`relative flex-shrink-0 w-[85vw] md:w-auto md:h-[500px] ${aspectClass} rounded-3xl overflow-hidden cursor-pointer group border border-border bg-muted/20 backdrop-blur-sm`}
-                                        whileHover={{ scale: 1.03 }}
-                                        transition={{
-                                            type: "spring",
-                                            stiffness: 300,
-                                            damping: 20,
-                                        }}
-                                    >
-                                        {/* Background Image — premium hover zoom */}
-                                        <div className="absolute inset-0">
-                                            <Image
-                                                src={gallery.cover}
-                                                alt={gallery.title}
-                                                fill
-                                                className="object-cover opacity-80 group-hover:opacity-60 transition-all duration-700 group-hover:scale-110"
-                                                style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                                        </div>
-
-                                        {/* Content — staggered hover reveal */}
-                                        <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end">
-                                            <div
-                                                className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-600"
-                                                style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
-                                            >
-                                                <h4
-                                                    className="text-primary text-xs font-bold uppercase tracking-widest mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                                    style={{ transitionDelay: '50ms' }}
-                                                >
-                                                    {gallery.count}
-                                                </h4>
-                                                <h3 className="font-bold text-white mb-2 leading-tight text-3xl drop-shadow-md">
-                                                    {gallery.title}
-                                                </h3>
-                                                <div
-                                                    className="flex items-center gap-2 text-white/80 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                                    style={{ transitionDelay: '150ms' }}
-                                                >
-                                                    <span>{isVideo ? 'Watch Video' : 'View Gallery'}</span>
-                                                    <ArrowUpRight size={16} />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Play Button for Videos */}
-                                        {isVideo && (
-                                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                <motion.div
-                                                    className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30"
-                                                    whileHover={{ scale: 1.15 }}
-                                                    transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                                                >
-                                                    <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[18px] border-l-white border-b-[10px] border-b-transparent ml-1" />
-                                                </motion.div>
-                                            </div>
-                                        )}
-                                    </motion.div>
-                                );
-                            })}
-                        </motion.div>
-                    </div>
-
-                    {/* =========================================
-                        CONTROLS — Fade in after carousel
-                        ========================================= */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                        transition={{ duration: 0.8, ease: EASE_PREMIUM, delay: 0.5 }}
-                        className="flex justify-center items-center gap-6 mt-12 md:mt-16"
-                    >
-                        <motion.button
-                            onClick={isMobile ? mobilePrev : prevSlide}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                            className="w-12 h-12 rounded-full flex items-center justify-center text-foreground hover:bg-primary/20 hover:text-primary transition-colors duration-300"
-                            aria-label="Previous gallery"
-                        >
-                            <ChevronLeft size={28} />
-                        </motion.button>
-
-                        <div className="flex gap-3">
-                            {galleries.map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => {
-                                        if (isMobile) {
-                                            setMobileActiveIndex(index);
-                                            scrollMobileToIndex(index);
-                                        } else {
-                                            setIsTransitioning(true);
-                                            setCurrentIndex(totalItems + index);
-                                        }
-                                    }}
-                                    className={`h-2 rounded-full transition-all duration-500 ${index === (isMobile ? mobileActiveIndex : displayIndex)
-                                        ? 'w-8 bg-primary'
-                                        : 'w-2 bg-foreground/20 hover:bg-foreground/40'
-                                        }`}
-                                    style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
-                                    aria-label={`Go to gallery ${index + 1}`}
-                                />
-                            ))}
-                        </div>
-
-                        <motion.button
-                            onClick={isMobile ? mobileNext : nextSlide}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                            className="w-12 h-12 rounded-full flex items-center justify-center text-foreground hover:bg-primary/20 hover:text-primary transition-all duration-300"
-                            aria-label="Next gallery"
-                        >
-                            <ChevronRight size={28} />
-                        </motion.button>
-                    </motion.div>
-                </motion.div>
-
-                {/* Overlays */}
-                <GalleryOverlay
-                    category={selectedGallery?.category ?? null}
-                    images={selectedGallery?.images ?? []}
-                    onClose={() => setSelectedGallery(null)}
-                />
-                <VideoOverlay
-                    videoId={selectedVideo}
-                    onClose={() => setSelectedVideo(null)}
-                />
             </div>
+
+            {/* Slider Marquee Container */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                transition={{ duration: 0.8, ease: EASE_PREMIUM, delay: 0.3 }}
+                className="relative w-full"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                <div
+                    ref={scrollRef}
+                    className={`flex gap-4 md:gap-6 px-4 md:px-16 overflow-x-auto scrollbar-none pb-8 ${isMobile ? 'snap-x snap-mandatory' : ''
+                        }`}
+                    style={{
+                        scrollBehavior: 'auto',
+                        WebkitOverflowScrolling: 'touch',
+                    }}
+                >
+                    {marqueeItems.map((gallery, index) => (
+                        <GalleryItem
+                            key={`${gallery.id}-${index}`}
+                            gallery={gallery}
+                            onClick={() => handleClick(gallery)}
+                        />
+                    ))}
+                </div>
+
+                {/* Fade edges */}
+                <div className="pointer-events-none absolute top-0 bottom-0 left-0 w-8 md:w-24 bg-gradient-to-r from-[#0a0a0a] to-transparent z-10" />
+                <div className="pointer-events-none absolute top-0 bottom-0 right-0 w-8 md:w-24 bg-gradient-to-l from-[#0a0a0a] to-transparent z-10" />
+            </motion.div>
+
+
+
+            {/* Overlays */}
+            <GalleryOverlay
+                category={selectedGallery?.category ?? null}
+                images={selectedGallery?.images ?? []}
+                onClose={() => setSelectedGallery(null)}
+            />
+            <VideoOverlay
+                videoId={selectedVideo}
+                onClose={() => setSelectedVideo(null)}
+            />
         </section>
     );
 }

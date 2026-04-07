@@ -9,11 +9,7 @@ export default function ScrollToTop() {
 
     useEffect(() => {
         const toggleVisibility = () => {
-            if (window.scrollY > 300) {
-                setIsVisible(true);
-            } else {
-                setIsVisible(false);
-            }
+            setIsVisible(window.scrollY > 300);
         };
 
         window.addEventListener('scroll', toggleVisibility);
@@ -35,10 +31,10 @@ export default function ScrollToTop() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.5 }}
                     onClick={scrollToTop}
-                    className="fixed bottom-8 right-8 z-50 p-3 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 hidden md:flex items-center justify-center"
+                    className="fixed bottom-8 right-8 z-50 p-3 bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors focus:outline-none hidden md:flex items-center justify-center"
                     aria-label="Scroll to top"
                 >
-                    <ArrowUp size={24} />
+                    <ArrowUp size={20} strokeWidth={2} />
                 </motion.button>
             )}
         </AnimatePresence>

@@ -1,23 +1,20 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google"; // Outfit is a great Google Sans alternative
 import "./globals.css";
-import { ThemeProvider } from "@/components/ThemeProvider";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["400", "500"], // Regular and Medium as requested
-  variable: "--font-outfit",
-  display: "swap",
-});
-
-export const metadata: Metadata = {
-  title: "4nuraag",
-  description: "Portfolio",
-};
-
 import NoiseOverlay from "@/components/NoiseOverlay";
 import MobileNavBar from "@/components/MobileNavBar";
-import LazyBackgroundBeams from "@/components/LazyBackgroundBeams";
+
+export const metadata: Metadata = {
+  title: "Anuraag Vinod Kumar — Portfolio",
+  description: "Creative Technologist, UI/UX Designer, and Full-Stack Developer. Exploring the intersection of design and engineering through interactive experiences, data visualization, and digital media.",
+  icons: {
+    icon: "/favicon.png",
+  },
+  openGraph: {
+    title: "Anuraag Vinod Kumar — Portfolio",
+    description: "Creative Technologist, UI/UX Designer, and Full-Stack Developer. Portfolio showcasing projects in design, development, and creative technology.",
+    type: "website",
+  },
+};
 
 export default function RootLayout({
   children,
@@ -25,25 +22,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body
-        className={`${outfit.variable} font-sans antialiased`}
+        className="antialiased bg-[#0a0a0a] text-[#e8e8e8]"
       >
         <NoiseOverlay />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-        >
-          {/* Base Background Layer */}
-          <div className="fixed inset-0 -z-[60] bg-background transition-colors duration-500 pointer-events-none" />
-
-          {/* Animated Beams Layer — lazy loaded, pauses when off-screen */}
-          <LazyBackgroundBeams className="-z-[50] fixed inset-0" />
-
-          {children}
-          <MobileNavBar />
-        </ThemeProvider>
+        {children}
+        <MobileNavBar />
       </body>
     </html>
   );

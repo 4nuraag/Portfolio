@@ -1,105 +1,113 @@
 @import "tailwindcss";
 
+/* =============================================
+   DARK-ONLY DESIGN SYSTEM
+   Editorial / Agency Aesthetic
+   ============================================= */
+
 :root {
-  /* Light Theme (Cream/Red) */
-  --background: #fdfcf8;
-  /* Cream White */
-  --foreground: #1a1a1a;
+  /* Background */
+  --background: #0a0a0a;
+  --foreground: #e8e8e8;
 
-  --primary: #dc2626;
-  /* Royal Red */
-  --primary-foreground: #ffffff;
+  /* Accent — Acid Green */
+  --primary: #c8ff00;
+  --primary-foreground: #0a0a0a;
 
-  --secondary: #e2e8f0;
-  --secondary-foreground: #1e293b;
+  /* Secondary */
+  --secondary: #161616;
+  --secondary-foreground: #e8e8e8;
 
-  --accent: #b91c1c;
-  /* Darker Red */
-  --accent-foreground: #ffffff;
+  /* Accent alias */
+  --accent: #c8ff00;
+  --accent-foreground: #0a0a0a;
 
-  --card: #ffffff;
-  --card-foreground: #1a1a1a;
+  /* Card */
+  --card: #111111;
+  --card-foreground: #e8e8e8;
 
-  --muted: #f3f4f6;
-  --muted-foreground: #6b7280;
+  /* Muted */
+  --muted: #1a1a1a;
+  --muted-foreground: #737373;
 
-  --border: #e5e7eb;
+  /* Border */
+  --border: #222222;
 
-  /* Background Beams - Light (Red Palette) */
-  --beam-path: #525252;
-  /* Darker Neutral 600 */
-  --beam-opacity: 0.15;
-  /* Lower opacity for light mode */
-  --beam-c1: #fca5a5;
-  /* Red 300 */
-  --beam-c2: #dc2626;
-  /* Red 600 */
-  --beam-c3: #7f1d1d;
-  /* Red 900 */
+  /* Premium Easing Curves */
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
+/* Force dark class for Tailwind */
 .dark {
-  /* Dark Theme (Black/Blue) */
-  --background: #000000;
-  --foreground: #f0f6fc;
-
-  --primary: #3b82f6;
-  /* Royal Blue */
-  --primary-foreground: #ffffff;
-
-  --secondary: #1e293b;
-  --secondary-foreground: #f8fafc;
-
-  --accent: #2563eb;
-  /* Darker Blue */
-  --accent-foreground: #ffffff;
-
-  --card: #0a0a0a;
-  --card-foreground: #f0f6fc;
-
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-
-  --border: #334155;
-
-  /* Background Beams - Dark (Blue Palette) */
-  --beam-path: #334155;
-  /* Slate 700 */
-  --beam-opacity: 0.3;
-  /* Default opacity for dark mode */
-  --beam-c1: #60a5fa;
-  /* Blue 400 */
-  --beam-c2: #3b82f6;
-  /* Blue 500 */
-  --beam-c3: #1e3a8a;
-  /* Blue 900 */
+  --background: #0a0a0a;
+  --foreground: #e8e8e8;
+  --primary: #c8ff00;
+  --primary-foreground: #0a0a0a;
+  --secondary: #161616;
+  --secondary-foreground: #e8e8e8;
+  --accent: #c8ff00;
+  --accent-foreground: #0a0a0a;
+  --card: #111111;
+  --card-foreground: #e8e8e8;
+  --muted: #1a1a1a;
+  --muted-foreground: #737373;
+  --border: #222222;
 }
 
-
+/* =============================================
+   BASE STYLES
+   ============================================= */
 
 html {
-  /* Smooth scroll — the single biggest "premium feel" upgrade */
   scroll-behavior: smooth;
+  color-scheme: dark;
+  font-size: 14px;
+  /* Globally reduces all REM-based typography by -2px baseline */
 }
 
-/* Disable smooth scroll for users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 }
 
+/* =============================================
+   SHARP CORNERS — Global override
+   ============================================= */
+
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+}
+
 html,
 body {
-  background: transparent;
+  background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-outfit), sans-serif;
+  font-family: 'Google Sans', system-ui, sans-serif;
   font-weight: 400;
-  /* Regular default */
-  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
-  padding-bottom: env(safe-area-inset-bottom);
-  /* Safe area for mobiles */
   min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Grain/noise texture on body */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
 }
 
 canvas {
@@ -107,39 +115,8 @@ canvas {
 }
 
 /* =============================================
-   PREMIUM EASING CURVES (NINTH°-inspired)
+   TAILWIND THEME TOKENS
    ============================================= */
-
-:root {
-  /* The signature "premium" ease — slow start, fast middle, soft landing */
-  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
-  /* Snappy entrance for reveals */
-  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
-  /* Gentle deceleration for hover states */
-  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
-  /* Smooth content transitions */
-  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-/* =============================================
-   GPU-PROMOTED ANIMATION UTILITIES
-   ============================================= */
-
-/* Use on elements that will animate transform/opacity */
-.gpu-accelerated {
-  will-change: transform, opacity;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-
-/* Stagger reveal utility — elements start invisible, 
-   get revealed by Framer Motion with choreographed delays */
-.reveal-child {
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-/* Global Styles */
 
 @theme {
   --color-background: var(--background);
@@ -155,6 +132,10 @@ canvas {
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+
+  --font-heading: 'Google Sans', system-ui, sans-serif;
+  --font-body: 'Google Sans', system-ui, sans-serif;
+  --font-mono: 'Google Sans', system-ui, sans-serif;
 
   --animate-breathing: breathing 5s ease-in-out infinite;
 
@@ -176,41 +157,161 @@ canvas {
   }
 }
 
-/* Fluid Typography */
+/* =============================================
+   TYPOGRAPHY — Editorial, tight, reduced for YaHei
+   ============================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Google Sans', system-ui, sans-serif;
+  letter-spacing: -0.03em;
+}
+
 h1 {
-  font-size: clamp(2.5rem, 5vw + 1rem, 5rem);
-  font-weight: 500;
-  /* Medium */
+  font-size: clamp(2rem, 4vw + 0.5rem, 4rem);
+  font-weight: 700;
+  line-height: 0.95;
 }
 
 h2 {
-  font-size: clamp(2rem, 4vw + 1rem, 4rem);
-  font-weight: 500;
-  /* Medium */
+  font-size: clamp(1.5rem, 3vw + 0.5rem, 2.75rem);
+  font-weight: 700;
+  line-height: 1;
 }
 
 h3 {
-  font-size: clamp(1.25rem, 2vw + 1rem, 2rem);
-  font-weight: 500;
-  /* Medium */
+  font-size: clamp(1.1rem, 1.5vw + 0.5rem, 1.6rem);
+  font-weight: 600;
 }
 
 p {
-  font-size: clamp(1rem, 1vw + 0.5rem, 1.125rem);
+  font-size: clamp(0.75rem, 0.4vw + 0.5rem, 0.9rem);
+  line-height: 1.6;
 }
 
-/* Utilities */
+/* =============================================
+   GPU-PROMOTED ANIMATION UTILITIES
+   ============================================= */
+
+.gpu-accelerated {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.reveal-child {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+/* =============================================
+   UTILITIES
+   ============================================= */
+
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Hide scrollbar for native-scroll carousels */
+/* Hide scrollbar */
 .scrollbar-none::-webkit-scrollbar,
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .scrollbar-none,
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Custom scrollbar for body */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Accent glow utility */
+.glow-accent {
+  box-shadow: 0 0 20px rgba(200, 255, 0, 0.15), 0 0 40px rgba(200, 255, 0, 0.05);
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(200, 255, 0, 0.3);
+  color: #fff;
+}
+
+/* =============================================
+   PROJECTS MASONRY — CSS columns
+   ============================================= */
+
+.projects-masonry {
+  columns: 3;
+  column-gap: 20px;
+}
+
+.projects-masonry>* {
+  break-inside: avoid;
+  display: inline-block;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .projects-masonry {
+    columns: 2;
+    column-gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .projects-masonry {
+    columns: 1;
+  }
+}
+
+/* =============================================
+   DECRYPTED TEXT — Scramble effect
+   ============================================= */
+
+.decrypted-text-parent {
+  font-family: 'Google Sans', system-ui, sans-serif;
+}
+
+.decrypted-char-revealed {
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.3s ease;
+}
+
+.decrypted-char-encrypted {
+  color: rgba(200, 255, 0, 0.5);
+  font-family: 'Google Sans', system-ui, sans-serif;
+  transition: color 0.1s ease;
+}
+
+/* =============================================
+   HERO NAME — Mobile single-line
+   ============================================= */
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: clamp(1rem, 7.5vw, 2.5rem) !important;
+    white-space: nowrap;
+    letter-spacing: 0.02em !important;
+  }
 }

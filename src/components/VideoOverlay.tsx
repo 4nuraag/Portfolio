@@ -25,12 +25,13 @@ export default function VideoOverlay({ videoId, onClose }: VideoOverlayProps) {
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="relative w-full max-w-5xl aspect-video bg-black rounded-lg overflow-hidden shadow-2xl border border-white/10"
+                        className="relative w-full max-w-5xl aspect-video bg-black overflow-hidden shadow-2xl border border-white/10"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <button
                             onClick={onClose}
-                            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/50 hover:bg-white text-white hover:text-black transition-colors"
+                            className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-white text-white hover:text-black transition-colors"
+                            aria-label="Close"
                         >
                             <X size={24} />
                         </button>

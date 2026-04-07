@@ -1,90 +1,90 @@
 'use client';
 
-import React, { useRef, useState, useEffect, Suspense } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
-import { Typewriter } from 'react-simple-typewriter';
+import { ChevronDown } from 'lucide-react';
+import DecryptedText from './DecryptedText';
 
-// =============================================
-// LAZY WEBGL COMPONENTS
-// Only mount after first paint to avoid blocking initial render
-// =============================================
-const GridDistortion = React.lazy(() => import('./GridDistortion'));
-const LiquidEther = React.lazy(() => import('./LiquidEther'));
-
-// Premium easing curve — matches NINTH° feel
 const PREMIUM_EASE = [0.16, 1, 0.3, 1] as const;
-const EXPO_OUT = [0.19, 1, 0.22, 1] as const;
 
-export default function Hero() {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const contentRef = useRef<HTMLDivElement>(null);
-    const isInView = useInView(contentRef, { once: true });
-    const [webglReady, setWebglReady] = useState(false);
+const ROLES = ['Creative Technologist', 'UI/UX Designer', 'Web Application Developer'];
 
-    // Delay WebGL mount until after first meaningful paint
-    useEffect(() => {
-        const schedule =
-            (window as any).requestIdleCallback ||
-            ((cb: () => void) => setTimeout(cb, 100));
-        const id = schedule(() => setWebglReady(true));
-        return () => {
-            const cancel = (window as any).cancelIdleCallback || clearTimeout;
-            cancel(id);
-        };
+function CyclingDecryptedText() {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [triggerKey, setTriggerKey] = useState(0);
+
+    const handleAnimationComplete = useCallback(() => {
+        // Wait 2.5s after decryption finishes, then switch to next role
+        const timeout = setTimeout(() => {
+            setCurrentIndex((prev) => (prev + 1) % ROLES.length);
+            setTriggerKey((prev) => prev + 1);
+        }, 2500);
+        return () => clearTimeout(timeout);
     }, []);
 
-    // =============================================
-    // SCROLL-DRIVEN PARALLAX SYSTEM
-    // Different layers move at different speeds
-    // creating perceived depth without 3D overhead
-    // =============================================
+    return (
+        <DecryptedText
+            key={triggerKey}
+            text={ROLES[currentIndex]}
+            speed={40}
+            maxIterations={15}
+            sequential={true}
+            revealDirection="start"
+            animateOn="view"
+            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*"
+            className="decrypted-char-revealed"
+            encryptedClassName="decrypted-char-encrypted"
+            parentClassName="decrypted-text-parent"
+            onAnimationComplete={handleAnimationComplete}
+        />
+    );
+}
+
+export default function Hero() {
+    const sectionRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+    const isInView = useInView(contentRef, { once: true });
+
+    // Parallax scroll — image moves slower, content moves faster
     const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start start", "end start"]
+        target: sectionRef,
+        offset: ['start start', 'end start'],
     });
 
-    // Smooth spring on scroll progress — removes jitter
     const smoothProgress = useSpring(scrollYProgress, {
-        stiffness: 100,
+        stiffness: 80,
         damping: 30,
         restDelta: 0.001,
     });
 
-    // Background layer: moves SLOWER than scroll (parallax depth)
-    const bgY = useTransform(smoothProgress, [0, 1], ['0%', '30%']);
-    const bgScale = useTransform(smoothProgress, [0, 1], [1, 1.15]);
+    // Background moves up slowly (parallax)
+    // Scale starts at 1.08 so there's bleed room for y movement without exposing edges
+    const bgY = useTransform(smoothProgress, [0, 1], ['0%', '8%']);
+    const bgScale = useTransform(smoothProgress, [0, 1], [1.08, 1.18]);
 
-    // Content layer: moves FASTER for separation
+    // Content fades and moves up faster
     const contentY = useTransform(smoothProgress, [0, 1], ['0%', '-20%']);
-    const contentOpacity = useTransform(smoothProgress, [0, 0.6], [1, 0]);
+    const contentOpacity = useTransform(smoothProgress, [0, 0.5], [1, 0]);
 
-    // Portfolio label: subtle independent parallax
-    const labelY = useTransform(smoothProgress, [0, 1], ['0%', '-40%']);
-    const labelOpacity = useTransform(smoothProgress, [0, 0.4], [1, 0]);
+    // Overlay darkens as you scroll
+    const overlayOpacity = useTransform(smoothProgress, [0, 0.8], [0.3, 0.85]);
 
-    // Fade overlay (cheaper than fading the WebGL layers)
-    const overlayOpacity = useTransform(smoothProgress, [0, 0.8], [0, 1]);
-
-    // =============================================
-    // STAGGERED REVEAL ANIMATIONS
-    // Elements arrive in choreographed sequence
-    // like a film title card — NINTH° signature move
-    // =============================================
+    // Stagger container for choreographed entrance
     const staggerContainer = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.15,
-                delayChildren: 0.3,
+                staggerChildren: 0.2,
+                delayChildren: 0.4,
             },
         },
     };
 
-    const staggerChild = {
+    const fadeUp = {
         hidden: {
             opacity: 0,
-            y: 60,
+            y: 50,
             filter: 'blur(10px)',
         },
         visible: {
@@ -92,168 +92,183 @@ export default function Hero() {
             y: 0,
             filter: 'blur(0px)',
             transition: {
-                duration: 1.2,
+                duration: 1.4,
                 ease: PREMIUM_EASE,
             },
         },
     };
 
-    const labelReveal = {
+    const fadeIn = {
         hidden: {
             opacity: 0,
-            x: -30,
             filter: 'blur(8px)',
         },
         visible: {
             opacity: 1,
-            x: 0,
             filter: 'blur(0px)',
             transition: {
                 duration: 1.0,
-                ease: EXPO_OUT,
-                delay: 0.1,
+                ease: PREMIUM_EASE,
+                delay: 1.2,
             },
         },
     };
 
     return (
-        <section id="hero" ref={containerRef} className="relative h-[150vh] w-full">
-            <div className="sticky top-0 h-screen w-full overflow-hidden">
-                {/* =========================================
-                    BACKGROUND LAYER — Parallax depth
-                    Moves at 0.3x scroll speed
-                    ========================================= */}
-                <motion.div
-                    style={{ y: bgY, scale: bgScale }}
-                    className="absolute inset-0 w-full h-full will-change-transform"
+        <section
+            ref={sectionRef}
+            id="hero"
+            className="relative h-screen w-full overflow-hidden"
+        >
+            {/* =========================================
+                PARALLAX BACKGROUND VIDEO
+                ========================================= */}
+            <motion.div
+                className="absolute inset-0 w-full h-full overflow-hidden"
+                style={{ y: bgY, scale: bgScale }}
+            >
+                <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="auto"
+                    className="w-full h-full object-cover"
+                    style={{ objectPosition: '80% center' }}
                 >
-                    {/* WebGL layers — lazy loaded after first paint */}
-                    {webglReady ? (
-                        <Suspense fallback={
-                            <div className="absolute inset-0 bg-background" />
-                        }>
-                            {/* 1. Grid Distortion (Base Image) */}
-                            <GridDistortion
-                                imageSrc="./hero-bg.png"
-                                grid={10}
-                                mouse={0}
-                                strength={0}
-                                relaxation={0.9}
-                                yOffset={-0.15}
-                                className="w-full h-full object-cover"
-                            />
+                    <source src="/hero_bg_video.mp4" type="video/mp4" />
+                </video>
+            </motion.div>
 
-                            {/* 2. Liquid Ether Effect Overlay */}
-                            <div className="absolute inset-0 z-10 opacity-60 mix-blend-screen pointer-events-none will-change-transform">
-                                <LiquidEther
-                                    colors={['#FFFFFF', '#45A6FF', '#E3F2FD']}
-                                    mouseForce={20}
-                                    cursorSize={100}
-                                    isViscous={false}
-                                    viscous={30}
-                                    iterationsViscous={32}
-                                    iterationsPoisson={32}
-                                    resolution={0.5}
-                                    dt={0.005}
-                                    isBounce={false}
-                                    autoDemo={true}
-                                    autoSpeed={0.5}
-                                    autoIntensity={2.2}
-                                    takeoverDuration={0.25}
-                                    autoResumeDelay={3000}
-                                    autoRampDuration={0.6}
-                                    className="w-full h-full pointer-events-auto"
-                                />
-                            </div>
-                        </Suspense>
-                    ) : (
-                        /* Placeholder while WebGL loads */
-                        <div className="absolute inset-0 bg-background" />
-                    )}
+            {/* =========================================
+                DARK GRADIENT OVERLAYS
+                — Cinematic vignette + bottom gradient
+                ========================================= */}
+            {/* Overall dark overlay that deepens on scroll */}
+            <motion.div
+                className="absolute inset-0 bg-black/30 z-[1]"
+                style={{ opacity: overlayOpacity }}
+            />
 
-                    {/* 3. Bottom Gradient Blend — extended for smoother transition */}
-                    <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-background via-background/50 to-transparent z-10" />
+            {/* Dark overlay on top of video for text legibility */}
+            <div
+                className="absolute inset-0 bg-black/45 z-[1] pointer-events-none"
+            />
 
-                    {/* 4. Scroll Fade Overlay */}
-                    <motion.div
-                        style={{ opacity: overlayOpacity }}
-                        className="absolute inset-0 bg-background z-20 pointer-events-none will-change-opacity"
-                    />
-                </motion.div>
+            {/* Bottom gradient — smooth blend to dark background */}
+            <div
+                className="absolute bottom-0 left-0 w-full h-[45%] z-[2] pointer-events-none"
+                style={{
+                    background: 'linear-gradient(to top, #0a0a0a 0%, #0a0a0a 8%, rgba(10,10,10,0.85) 25%, rgba(10,10,10,0.4) 50%, transparent 100%)',
+                }}
+            />
 
-                {/* =========================================
-                    CONTENT LAYER — Moves at 1.2x scroll speed
-                    Staggered reveal on mount
-                    ========================================= */}
+            {/* Side vignette — cinematic feel */}
+            <div
+                className="absolute inset-0 z-[2] pointer-events-none"
+                style={{
+                    background: 'radial-gradient(ellipse at center, transparent 50%, rgba(10,10,10,0.6) 100%)',
+                }}
+            />
+
+            {/* =========================================
+                CONTENT — Bottom-right editorial layout
+                (matching reference image)
+                ========================================= */}
+            <motion.div
+                ref={contentRef}
+                className="absolute inset-0 z-10 flex flex-col justify-end px-4 md:px-16 pb-28 md:pb-24"
+                style={{ y: contentY, opacity: contentOpacity }}
+            >
                 <motion.div
-                    style={{ y: contentY, opacity: contentOpacity }}
-                    className="relative z-30 h-full w-full pointer-events-none"
+                    variants={staggerContainer}
+                    initial="hidden"
+                    animate={isInView ? 'visible' : 'hidden'}
+                    className="max-w-[1400px] w-full mx-auto flex flex-col items-end"
                 >
-                    {/* Top Left: Portfolio Label — independent parallax */}
-                    <motion.div
-                        style={{ y: labelY, opacity: labelOpacity }}
-                        className="absolute top-8 left-8 pointer-events-auto"
-                    >
-                        <motion.h2
-                            variants={labelReveal}
-                            initial="hidden"
-                            animate={isInView ? "visible" : "hidden"}
-                            className="text-2xl md:text-3xl font-medium text-white/90 tracking-wide"
+                    {/* Name — Large editorial headline, right-aligned */}
+                    <motion.div variants={fadeUp} className="overflow-hidden">
+                        <h1
+                            className="hero-title font-bold text-white uppercase leading-[0.9] text-right"
+                            style={{
+                                fontFamily: "'Google Sans', system-ui, sans-serif",
+                                fontSize: 'clamp(3rem, 7vw, 6rem)',
+                                letterSpacing: '-0.03em',
+                                textShadow: '0 4px 30px rgba(0,0,0,0.5)',
+                            }}
                         >
-                            Portfolio
-                        </motion.h2>
+                            <span className="hidden md:inline">ANURAAG VINOD KUMAR</span>
+                            <span className="md:hidden">ANURAAG V K</span>
+                        </h1>
                     </motion.div>
 
-                    {/* Bottom Right: Name & Roles — staggered entrance */}
-                    <div
-                        ref={contentRef}
-                        className="absolute bottom-32 md:bottom-16 left-4 right-4 md:left-auto md:right-16 text-right space-y-2 pointer-events-auto"
+                    {/* Accent line */}
+                    <motion.div variants={fadeUp} className="mt-4 md:mt-5 flex justify-end w-full">
+                        <div className="w-16 md:w-24 h-[2px] bg-primary/60" />
+                    </motion.div>
+
+                    {/* Cycling DecryptedText roles */}
+                    <motion.div
+                        variants={fadeUp}
+                        className="mt-4 md:mt-5 flex justify-end w-full h-8 md:h-10"
                     >
-                        <motion.div
-                            variants={staggerContainer}
-                            initial="hidden"
-                            animate={isInView ? "visible" : "hidden"}
-                            className="space-y-3"
+                        <div
+                            className="text-white/70 text-sm md:text-base font-light tracking-[0.2em] uppercase text-right"
+                            style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
                         >
-                            {/* Name — arrives first with blur-to-sharp + slide-up */}
-                            <motion.div variants={staggerChild}>
-                                <h1
-                                    className="font-semibold text-white tracking-tight uppercase drop-shadow-lg whitespace-nowrap w-full"
-                                    style={{ fontSize: 'clamp(2rem, 4.8vw, 4.5rem)' }}
-                                >
-                                    ANURAAG VINOD KUMAR
-                                </h1>
-                            </motion.div>
-
-                            {/* Decorative line — arrives second */}
-                            <motion.div
-                                variants={staggerChild}
-                                className="flex justify-end"
-                            >
-                                <div className="w-16 md:w-24 h-[1px] bg-white/40" />
-                            </motion.div>
-
-                            {/* Typewriter roles — arrives third */}
-                            <motion.div
-                                variants={staggerChild}
-                                className="text-white/80 text-lg md:text-2xl font-light tracking-wider h-8"
-                            >
-                                <Typewriter
-                                    words={['UI UX Designer', 'Creative Technologist', 'Web Application Developer']}
-                                    loop={true}
-                                    cursor
-                                    cursorStyle='|'
-                                    typeSpeed={70}
-                                    deleteSpeed={50}
-                                    delaySpeed={1000}
-                                />
-                            </motion.div>
-
-
-                        </motion.div>
-                    </div>
+                            <CyclingDecryptedText />
+                        </div>
+                    </motion.div>
                 </motion.div>
-            </div>
+            </motion.div>
+
+            {/* =========================================
+                "PORTFOLIO" label — top left
+                ========================================= */}
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                transition={{ duration: 1.0, ease: PREMIUM_EASE, delay: 0.6 }}
+                className="absolute top-8 left-4 md:top-12 md:left-16 z-10"
+            >
+                <span
+                    className="text-white font-bold text-xl md:text-2xl tracking-tight"
+                    style={{
+                        fontFamily: "'Google Sans', system-ui, sans-serif",
+                        textShadow: '0 2px 20px rgba(0,0,0,0.4)',
+                    }}
+                >
+                    Portfolio
+                </span>
+            </motion.div>
+
+            {/* =========================================
+                SCROLL INDICATOR — Bouncing arrow
+                ========================================= */}
+            <motion.div
+                variants={fadeIn}
+                initial="hidden"
+                animate={isInView ? 'visible' : 'hidden'}
+                className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-10"
+            >
+                <motion.div
+                    animate={{ y: [0, 8, 0] }}
+                    transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                    }}
+                    className="flex flex-col items-center gap-2 text-white/40"
+                >
+                    <span
+                        className="text-[9px] uppercase tracking-[0.3em] font-medium"
+                        style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
+                    >
+                        Scroll
+                    </span>
+                    <ChevronDown size={16} strokeWidth={1.5} />
+                </motion.div>
+            </motion.div>
         </section>
     );
 }

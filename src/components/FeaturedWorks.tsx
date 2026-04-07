@@ -1,22 +1,19 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
-import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import ProjectOverlay from './ProjectOverlay';
 import {
     staggerContainer,
     revealUp,
     revealFade,
-    revealScale,
     EASE_PREMIUM,
-    EASE_OUT_EXPO,
-    EASE_OUT_QUART,
     useScrollReveal,
 } from '@/lib/animations';
 
-// Data Structure — Keeping original content
+// Data — All content preserved exactly
 const projects = [
     {
         id: 'brainary',
@@ -75,7 +72,7 @@ const projects = [
         tags: ['Figma', 'UI/UX', 'CRM-Dashboard', 'Data-Visualization', 'Prototyping', 'Dark-Mode'],
         tools: 'Figma',
         image: './gallery/CAARD b2b.png',
-        link: 'https://www.figma.com/proto/6TMe8nRYBVq1Z8EBRacml1/CAARD-B2B-Revamp?node-id=1-3&t=s1eTJqDm1SMajO3s-0&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=1%3A3',
+        link: 'https://4nuraag.github.io/B2B-CRM-Dashboard-UI-UX/#/dashboard',
         buttonText: 'View Prototype'
     },
     {
@@ -104,429 +101,195 @@ const projects = [
     },
 ];
 
-// =============================================
-// MAGNETIC CARD COMPONENT
-// Card subtly follows the cursor with spring physics
-// on hover — the NINTH° "pull" effect
-// =============================================
+// Varying aspect ratios per card — creates natural masonry rhythm
+// Cycle: 4/3, 16/9, 1/1, 16/9, 4/3, 3/4, 16/9
+const IMAGE_ASPECT_RATIOS = [
+    '4 / 3',    // 0 — Brainary
+    '16 / 9',   // 1 — smalltown
+    '1 / 1',    // 2 — photography
+    '16 / 9',   // 3 — restaurant
+    '4 / 3',    // 4 — CRM
+    '3 / 4',    // 5 — data-vis (portrait, tall card)
+    '16 / 9',   // 6 — CAARD
+];
 
-function MagneticCard({
+// Card reveal animation
+const cardReveal = {
+    hidden: {
+        opacity: 0,
+        y: 40,
+        filter: 'blur(6px)',
+    },
+    visible: (i: number) => ({
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        transition: {
+            duration: 0.8,
+            ease: EASE_PREMIUM,
+            delay: i * 0.08,
+        },
+    }),
+};
+
+const MAX_VISIBLE_TAGS = 3;
+
+function ProjectCard({
     project,
     index,
-    isMobileCard,
-    refAttr,
     onSelect,
 }: {
     project: typeof projects[0];
     index: number;
-    isMobileCard: boolean;
-    refAttr: React.Ref<HTMLDivElement> | null;
     onSelect: (p: typeof projects[0]) => void;
 }) {
-    const cardRef = useRef<HTMLDivElement>(null);
-
-    // Motion values for magnetic tilt effect
-    const mouseX = useMotionValue(0);
-    const mouseY = useMotionValue(0);
-
-    // Smooth springs — the "magnetic pull"
-    const springX = useSpring(mouseX, { stiffness: 150, damping: 20 });
-    const springY = useSpring(mouseY, { stiffness: 150, damping: 20 });
-
-    // Transform to subtle rotation
-    const rotateX = useTransform(springY, [-0.5, 0.5], [4, -4]);
-    const rotateY = useTransform(springX, [-0.5, 0.5], [-4, 4]);
-
-    // Image parallax inside card
-    const imgX = useTransform(springX, [-0.5, 0.5], [8, -8]);
-    const imgY = useTransform(springY, [-0.5, 0.5], [8, -8]);
-
-    const handleMouseMove = useCallback((e: React.MouseEvent) => {
-        if (isMobileCard) return;
-        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-        const xPct = (e.clientX - rect.left) / rect.width - 0.5;
-        const yPct = (e.clientY - rect.top) / rect.height - 0.5;
-        mouseX.set(xPct);
-        mouseY.set(yPct);
-    }, [isMobileCard, mouseX, mouseY]);
-
-    const handleMouseLeave = useCallback(() => {
-        mouseX.set(0);
-        mouseY.set(0);
-    }, [mouseX, mouseY]);
+    const visibleTags = project.tags?.slice(0, MAX_VISIBLE_TAGS) ?? [];
+    const overflow = (project.tags?.length ?? 0) - MAX_VISIBLE_TAGS;
+    const aspectRatio = IMAGE_ASPECT_RATIOS[index % IMAGE_ASPECT_RATIOS.length];
 
     return (
         <motion.div
-            ref={(node) => {
-                // Merge refs
-                (cardRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-                if (typeof refAttr === 'function') refAttr(node);
-                else if (refAttr && 'current' in refAttr) {
-                    (refAttr as React.MutableRefObject<HTMLDivElement | null>).current = node;
-                }
+            custom={index}
+            variants={cardReveal}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.05 }}
+            className="group relative flex flex-col cursor-pointer overflow-hidden border border-white/[0.07] bg-card transition-all duration-200 ease-out hover:border-primary/40 break-inside-avoid"
+            style={{
+                transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                marginBottom: '20px',
             }}
-            style={isMobileCard ? {} : {
-                rotateX,
-                rotateY,
-                transformPerspective: 1200,
-            }}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            className={`relative flex-shrink-0 w-[85vw] md:w-[600px] lg:w-[700px] aspect-[16/9] md:aspect-[16/10] rounded-3xl overflow-hidden cursor-pointer group border border-white/10 ${isMobileCard ? 'snap-center' : ''}`}
-            onClick={() => {
-                if (typeof window !== 'undefined' && window.innerWidth >= 768) {
-                    if (project.link) window.open(project.link, '_blank');
-                } else {
-                    onSelect(project);
-                }
-            }}
+            onClick={() => onSelect(project)}
         >
-            {/* Background Image — subtle parallax on hover */}
-            <motion.div
-                style={isMobileCard ? {} : { x: imgX, y: imgY }}
-                className="absolute inset-[-16px] will-change-transform"
-            >
+            {/* ── IMAGE ── */}
+            <div className="relative w-full flex-shrink-0 overflow-hidden" style={{ aspectRatio }}>
                 <Image
                     src={project.image}
                     alt={project.title}
                     fill
-                    className="object-cover transition-all duration-700 group-hover:scale-105 group-hover:blur-[3px] group-hover:brightness-50 opacity-80"
+                    loading="lazy"
+                    className="object-cover object-[center_top] transition-transform duration-400 ease-out group-hover:scale-[1.04]"
                     style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
                 />
-            </motion.div>
+            </div>
 
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent transition-opacity duration-500 group-hover:opacity-80" />
-
-            {/* Card Content */}
-            <div className="absolute inset-0 p-6 md:p-10 flex flex-col justify-end items-start text-left">
-                <div
-                    className="w-full"
-                    style={{
-                        transform: 'translateY(2rem)',
-                        transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-                    }}
-                    // Use a data attribute for group-hover in pure CSS won't work here,
-                    // so we rely on the parent group class
-                >
-                    <div className="transform translate-y-8 md:translate-y-16 group-hover:translate-y-0 transition-transform duration-700 w-full" style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}>
-                        {/* Tags - Visible on Hover */}
-                        {project.tags && (
-                            <div className="flex flex-wrap gap-2 mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ transitionDelay: '100ms' }}>
-                                {project.tags.map((tag: string) => (
-                                    <span key={tag} className="px-3 py-1 rounded-full bg-black/40 border border-white/20 text-[10px] uppercase tracking-wider font-semibold backdrop-blur-md text-zinc-100">
-                                        {tag}
-                                    </span>
-                                ))}
-                            </div>
-                        )}
-
-                        <h3 className="text-2xl md:text-5xl font-bold text-white mb-2 leading-tight drop-shadow-lg">
-                            {project.title}
-                        </h3>
-
-                        <div className="flex flex-col gap-3 mb-1">
-                            <p className={`text-primary font-medium text-base tracking-wide ${!project.subtitle ? 'invisible' : ''}`}>
-                                {project.subtitle || 'Type'}
-                            </p>
-
-                            {/* Description - Expanded on hover with premium ease */}
-                            <div
-                                className="max-h-0 opacity-0 group-hover:max-h-40 group-hover:opacity-100 overflow-hidden hidden md:block"
-                                style={{
-                                    transition: 'max-height 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-                                    transitionDelay: '150ms',
-                                }}
+            {/* ── BODY ── */}
+            <div className="flex flex-1 flex-col gap-0 px-5 py-5 md:px-6 md:py-6">
+                {/* Tags */}
+                {visibleTags.length > 0 && (
+                    <div className="mb-3.5 flex flex-wrap gap-1.5">
+                        {visibleTags.map((tag: string) => (
+                            <span
+                                key={tag}
+                                className="inline-flex items-center border border-white/[0.15] px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.08em] leading-none text-white/60"
+                                style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
                             >
-                                <p className="text-zinc-200 text-sm leading-relaxed max-w-lg py-2">
-                                    {project.description}
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Action Button — slides up with delay */}
-                        <div
-                            className={`mt-4 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black font-bold hover:bg-zinc-200 shadow-lg shadow-white/10 ${(!project.link && !project.buttonText) ? 'opacity-0 invisible pointer-events-none' : 'opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0'}`}
-                            style={{
-                                transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-                                transitionDelay: '250ms',
-                            }}
-                        >
-                            <span className="text-xs uppercase tracking-wider font-bold">
-                                {project.buttonText || 'View Case Study'}
+                                {tag}
                             </span>
-                            <ArrowUpRight size={14} />
-                        </div>
+                        ))}
+                        {overflow > 0 && (
+                            <span
+                                className="inline-flex items-center border border-white/[0.15] px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.08em] leading-none text-white/50"
+                                style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
+                            >
+                                +{overflow}
+                            </span>
+                        )}
                     </div>
+                )}
+
+                {/* Title */}
+                <h3
+                    className="mb-2.5 text-[1.2rem] font-bold leading-[1.3] tracking-tight text-foreground"
+                    style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
+                >
+                    {project.title}
+                </h3>
+
+                {/* Description — full text, no clamp, flex-1 pushes CTA down */}
+                <p
+                    className="mb-5 text-sm leading-[1.6] text-white/50"
+                    style={{
+                        fontFamily: "'Google Sans', system-ui, sans-serif",
+                        flex: 1,
+                    }}
+                >
+                    {project.description}
+                </p>
+
+                {/* CTA — always pinned to bottom */}
+                <div className="mt-auto flex items-center gap-1.5">
+                    {(project.link || project.buttonText) && (
+                        <>
+                            <span
+                                className="text-[11px] font-semibold uppercase tracking-[0.1em] text-primary/80 transition-colors duration-200 ease-out group-hover:text-primary"
+                                style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
+                            >
+                                {project.buttonText || 'View Project'}
+                            </span>
+                            <ArrowUpRight
+                                size={14}
+                                className="text-primary/60 transition-all duration-200 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
+                            />
+                        </>
+                    )}
                 </div>
             </div>
         </motion.div>
     );
 }
 
-
 export default function FeaturedWorks() {
     const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
-
-    // Infinite Scroll Setup
-    const extendedProjects = [...projects, ...projects, ...projects];
-    const totalItems = projects.length;
-
-    const [currentIndex, setCurrentIndex] = useState(totalItems);
-    const [isTransitioning, setIsTransitioning] = useState(false);
-
-    const displayIndex = currentIndex % totalItems;
-
-    const [cardWidth, setCardWidth] = useState(0);
-    const [gap, setGap] = useState(24);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const cardRef = useRef<HTMLDivElement>(null);
-
-    // Mobile scroll carousel refs
-    const mobileScrollRef = useRef<HTMLDivElement>(null);
-    const mobileCardRefs = useRef<(HTMLDivElement | null)[]>([]);
-    const [mobileActiveIndex, setMobileActiveIndex] = useState(0);
-    const [isMobile, setIsMobile] = useState(false);
-
-    // Section reveal
-    const { ref: sectionRef, isInView } = useScrollReveal({ amount: 0.08 });
-
-    useEffect(() => {
-        const updateDimensions = () => {
-            if (cardRef.current) {
-                setCardWidth(cardRef.current.offsetWidth);
-            }
-            setGap(window.innerWidth >= 768 ? 32 : 24);
-            setIsMobile(window.innerWidth < 768);
-        };
-
-        updateDimensions();
-        window.addEventListener('resize', updateDimensions);
-        return () => window.removeEventListener('resize', updateDimensions);
-    }, []);
-
-    // Track mobile scroll position to highlight the active dot
-    useEffect(() => {
-        const container = mobileScrollRef.current;
-        if (!container) return;
-
-        const handleScroll = () => {
-            const scrollLeft = container.scrollLeft;
-            const containerWidth = container.clientWidth;
-            const index = Math.round(scrollLeft / (containerWidth * 0.85 + 16));
-            setMobileActiveIndex(Math.min(Math.max(index, 0), projects.length - 1));
-        };
-
-        container.addEventListener('scroll', handleScroll, { passive: true });
-        return () => container.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    // Scroll mobile carousel to a specific index
-    const scrollMobileToIndex = (index: number) => {
-        const card = mobileCardRefs.current[index];
-        if (card && mobileScrollRef.current) {
-            card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }
-    };
-
-    const mobileNext = () => {
-        const next = Math.min(mobileActiveIndex + 1, projects.length - 1);
-        setMobileActiveIndex(next);
-        scrollMobileToIndex(next);
-    };
-
-    const mobilePrev = () => {
-        const prev = Math.max(mobileActiveIndex - 1, 0);
-        setMobileActiveIndex(prev);
-        scrollMobileToIndex(prev);
-    };
-
-    // Navigation Logic
-    const nextSlide = () => {
-        if (!isTransitioning) {
-            setIsTransitioning(true);
-            setCurrentIndex((prev) => prev + 1);
-        }
-    };
-
-    const prevSlide = () => {
-        if (!isTransitioning) {
-            setIsTransitioning(true);
-            setCurrentIndex((prev) => prev - 1);
-        }
-    };
-
-    const handleAnimationComplete = () => {
-        if (currentIndex >= 2 * totalItems) {
-            setIsTransitioning(false);
-            setCurrentIndex(currentIndex - totalItems);
-        }
-        else if (currentIndex < totalItems) {
-            setIsTransitioning(false);
-            setCurrentIndex(currentIndex + totalItems);
-        } else {
-            setIsTransitioning(false);
-        }
-    };
-
-    useEffect(() => {
-        if (cardRef.current && cardWidth === 0) {
-            setCardWidth(cardRef.current.offsetWidth);
-        }
-    }, [currentIndex, cardWidth]);
+    const { ref: sectionRef, isInView } = useScrollReveal({ amount: 0.05 });
 
     return (
-        <section className="relative w-full text-foreground py-24 px-6 md:px-16 overflow-hidden" id="featured-works">
-            <div ref={sectionRef} className="max-w-[1400px] mx-auto">
-                {/* =========================================
-                    HEADER — Staggered reveal
-                    ========================================= */}
+        <section className="relative w-full text-foreground py-16 md:py-24 px-4 md:px-16 overflow-hidden" id="featured-works">
+            <div ref={sectionRef} className="max-w-[1200px] mx-auto">
+                {/* Header */}
                 <motion.div
                     variants={staggerContainer}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
-                    className="flex flex-col justify-center items-center mb-12 relative z-10"
+                    className="mb-16 md:mb-20"
                 >
+                    <motion.p
+                        variants={revealUp}
+                        className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-primary/80 font-medium mb-4"
+                        style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
+                    >
+                        Selected Work
+                    </motion.p>
                     <motion.h2
                         variants={revealUp}
-                        className="text-4xl md:text-6xl font-bold leading-tight mb-2 text-center"
+                        className="text-3xl md:text-5xl lg:text-6xl font-bold leading-none tracking-tight"
+                        style={{ fontFamily: "'Google Sans', system-ui, sans-serif" }}
                     >
                         Projects
                     </motion.h2>
-
-                    <motion.div variants={revealFade} className="mt-2">
-                        <div className="w-12 h-[1px] bg-primary/50" />
+                    <motion.div variants={revealFade} className="mt-6">
+                        <div className="w-16 h-[2px] bg-primary/40" />
                     </motion.div>
                 </motion.div>
 
-                {/* =========================================
-                    CAROUSEL — Scale reveal entrance
-                    ========================================= */}
-                <motion.div
-                    variants={revealScale}
-                    initial="hidden"
-                    animate={isInView ? "visible" : "hidden"}
-                    className="relative group/carousel"
-                >
-                    {/* Mobile Native Carousel Track */}
-                    <div ref={mobileScrollRef} className="flex md:hidden gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-8 px-4 -mx-4 mt-8">
-                        {projects.map((project, i) => (
-                            <MagneticCard
-                                key={`mobile-${project.id}-${i}`}
-                                project={project}
-                                index={i}
-                                isMobileCard={true}
-                                refAttr={(node: HTMLDivElement | null) => {
-                                    mobileCardRefs.current[i] = node;
-                                }}
-                                onSelect={setSelectedProject}
-                            />
-                        ))}
-                    </div>
-
-                    {/* Desktop Carousel Track */}
-                    <div
-                        className="hidden md:block relative w-full overflow-visible"
-                        ref={containerRef}
-                    >
-                        <motion.div
-                            className="flex gap-6 md:gap-8"
-                            animate={{ x: -currentIndex * (cardWidth + gap) }}
-                            transition={isTransitioning
-                                ? {
-                                    type: "spring",
-                                    stiffness: 200,  // Softer than before (was 300)
-                                    damping: 28,     // Slightly less damped for bouncier feel
-                                    mass: 0.8,       // Lighter for snappier response
-                                }
-                                : { duration: 0 }
-                            }
-                            onAnimationComplete={handleAnimationComplete}
-                            style={{ width: 'max-content' }}
-                            onPanEnd={(e, info) => {
-                                const swipe = info.offset.x;
-                                if (swipe < -50) {
-                                    nextSlide();
-                                } else if (swipe > 50) {
-                                    prevSlide();
-                                }
-                            }}
-                        >
-                            {extendedProjects.map((project, index) => (
-                                <MagneticCard
-                                    key={`${project.id}-${index}`}
-                                    project={project}
-                                    index={index}
-                                    isMobileCard={false}
-                                    refAttr={index === totalItems ? cardRef : null}
-                                    onSelect={setSelectedProject}
-                                />
-                            ))}
-                        </motion.div>
-                    </div>
-
-                    {/* =========================================
-                        CONTROLS — Fade in after carousel reveals
-                        ========================================= */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                        transition={{ duration: 0.8, ease: EASE_PREMIUM, delay: 0.5 }}
-                        className="flex justify-center items-center gap-6 mt-12 md:mt-16"
-                    >
-                        <motion.button
-                            onClick={isMobile ? mobilePrev : prevSlide}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                            className="w-12 h-12 rounded-full flex items-center justify-center text-foreground hover:bg-primary/20 hover:text-primary transition-colors duration-300"
-                            aria-label="Previous project"
-                        >
-                            <ChevronLeft size={28} />
-                        </motion.button>
-
-                        <div className="flex gap-3">
-                            {projects.map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => {
-                                        if (isMobile) {
-                                            setMobileActiveIndex(index);
-                                            scrollMobileToIndex(index);
-                                        } else {
-                                            setIsTransitioning(true);
-                                            setCurrentIndex(totalItems + index);
-                                        }
-                                    }}
-                                    className={`h-2 rounded-full transition-all duration-500 ${index === (isMobile ? mobileActiveIndex : displayIndex)
-                                        ? 'w-8 bg-primary'
-                                        : 'w-2 bg-foreground/20 hover:bg-foreground/40'
-                                        }`}
-                                    style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
-                                    aria-label={`Go to project ${index + 1}`}
-                                />
-                            ))}
-                        </div>
-
-                        <motion.button
-                            onClick={isMobile ? mobileNext : nextSlide}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                            className="w-12 h-12 rounded-full flex items-center justify-center text-foreground hover:bg-primary/20 hover:text-primary transition-all duration-300"
-                            aria-label="Next project"
-                        >
-                            <ChevronRight size={28} />
-                        </motion.button>
-                    </motion.div>
-                </motion.div>
-
-                {/* Overlay Modal */}
-                <ProjectOverlay
-                    project={selectedProject}
-                    onClose={() => setSelectedProject(null)}
-                />
+                {/* Masonry — CSS columns, varying heights */}
+                <div className="projects-masonry">
+                    {projects.map((project, index) => (
+                        <ProjectCard
+                            key={project.id}
+                            project={project}
+                            index={index}
+                            onSelect={setSelectedProject}
+                        />
+                    ))}
+                </div>
             </div>
+
+            {/* Project Overlay */}
+            <ProjectOverlay
+                project={selectedProject}
+                onClose={() => setSelectedProject(null)}
+            />
         </section>
     );
 }
